@@ -17,6 +17,7 @@ public class ParseTest {
 	public ParseTest(File file) {
 		try {
 			//new Timer(1);
+			@SuppressWarnings("resource")
 			final BufferedReader br = new BufferedReader(new FileReader(file));
 			final Timer t = new Timer();
 			t.schedule(new TimerTask() {
@@ -27,6 +28,7 @@ public class ParseTest {
 						String line = br.readLine();
 						
 						if(line == null) {
+							br.close();
 							t.cancel();
 							t.purge();
 							return;
