@@ -9,12 +9,11 @@ import java.util.TimerTask;
 
 public class ParseFile {
 
-
-	public static void main(String[] args) {
-		new ParseFile(new File("C:\\Users\\Ryan\\Desktop\\waypointEx.txt"));
+	public ParseFile(File file) {
+		start(file);
 	}
 	
-	public ParseFile(File file) {
+	public void start(File file) {
 		try {
 			//new Timer(1);
 			@SuppressWarnings("resource")
@@ -54,8 +53,10 @@ public class ParseFile {
 		}
 	}
 	
-	
-	
+	public ParseFile() {
+		
+	}
+
 	private void parseString(String s) {	
 		
 		String[] strArray = s.split(",");
