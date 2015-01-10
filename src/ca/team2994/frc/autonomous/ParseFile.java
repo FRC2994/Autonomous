@@ -7,14 +7,14 @@ import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class ParseTest {
+public class ParseFile {
 
 
 	public static void main(String[] args) {
-		new ParseTest(new File("C:\\Users\\Ryan\\Desktop\\waypointEx.txt"));
+		new ParseFile(new File("C:\\Users\\Ryan\\Desktop\\waypointEx.txt"));
 	}
 	
-	public ParseTest(File file) {
+	public ParseFile(File file) {
 		try {
 			//new Timer(1);
 			@SuppressWarnings("resource")
