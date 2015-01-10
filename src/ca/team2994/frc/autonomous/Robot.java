@@ -35,6 +35,7 @@ public class Robot extends SampleRobot {
 
     /**
      * Drive left & right motors for 2 seconds then stop
+     * TODO: Run program from log
      */
     public void autonomous() {
         myRobot.setSafetyEnabled(false);
@@ -45,6 +46,7 @@ public class Robot extends SampleRobot {
 
     /**
      * Runs the motors with arcade steering.
+     * TODO: Log waypoints
      */
     public void operatorControl() {
         myRobot.setSafetyEnabled(true);
@@ -56,7 +58,9 @@ public class Robot extends SampleRobot {
 
     /**
      * Runs during test mode
+     * TODO: Add some sort of waypoint test maybe?  Possibly run testWaypoint.xml
      */
     public void test() {
+    	
     }
 }
