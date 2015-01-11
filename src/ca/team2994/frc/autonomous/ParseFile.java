@@ -8,6 +8,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import ca.team2994.frc.utils.Utils;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Talon;
 
 /**
@@ -19,14 +20,25 @@ import edu.wpi.first.wpilibj.Talon;
  */
 public class ParseFile {
 	
+	/**
+	 * The talon motors on the robot
+	 */
 	private final Talon[] motors;
+	
+	/**
+	 * The shaft encoders on the robot
+	 */
+	@SuppressWarnings("unused")
+	private final Encoder[] encoders;
+	
 
 	/**
 	 * Assigns {@code motors} to {@code t} then passes on to {link #start(File) start(java.io.File file)}
 	 * @param file The file to be parsed
 	 * @param t The Talons to be passed to {@code motors}
 	 */
-	public ParseFile(File file, Talon[] t) {
+	public ParseFile(File file, Talon[] t, Encoder[] e) {
+		encoders = e;
 		motors = t;
 		start(file);
 	}
@@ -103,23 +115,6 @@ public class ParseFile {
 			motors[i].set(val);
 			Utils.ROBOT_LOGGER.info("Motor " + i + ": " + val);
 			i++;
-			/*switch(i++) {
-			case 0:
-				System.err.println("Motor " + i + ": " + val);
-				break;
-			case 1:
-				System.err.println("Motor " + i + ": " + val);
-				break;
-			case 2:
-				System.err.println("Motor " + i + ": " + val);
-				break;
-			case 3:
-				System.err.println("Motor " + i + ": " + val);
-				break;
-			default:
-				System.err.println("Error");
-				break;
-			}*/
 		}
 		Utils.ROBOT_LOGGER.info("================================\n");
 	}
