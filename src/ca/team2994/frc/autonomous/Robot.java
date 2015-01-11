@@ -2,11 +2,15 @@
 package ca.team2994.frc.autonomous;
 
 
-import static java.util.logging.Level.*;
+import static java.util.logging.Level.INFO;
+
+import java.io.File;
+
 import ca.team2994.frc.utils.Utils;
-import edu.wpi.first.wpilibj.SampleRobot;
-import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.SampleRobot;
+import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Timer;
 
 /**
@@ -28,9 +32,16 @@ import edu.wpi.first.wpilibj.Timer;
 public class Robot extends SampleRobot {
     RobotDrive myRobot;
     Joystick stick;
+    
+    final Talon motorA;
+    final Talon motorB;
 
     public Robot() {
-        myRobot = new RobotDrive(0, 1);
+
+    	motorA = new Talon(0);
+    	motorB = new Talon(1);
+    	
+        myRobot = new RobotDrive(motorA, motorB);
         myRobot.setExpiration(0.1);
         stick = new Joystick(0);
         
@@ -45,10 +56,15 @@ public class Robot extends SampleRobot {
     public void autonomous() {
     	Utils.ROBOT_LOGGER.log(INFO, "Autonomous");
     	
+    	new ParseFile(new File(Utils.AUTONOMOUS_OUTPUT_FILE_LOC), new Talon[] {
+    		motorA,
+    		motorB
+    	});
+    	
         myRobot.setSafetyEnabled(false);
-        myRobot.drive(-0.5, 0.0);	// drive forwards half speed
-        Timer.delay(2.0);		//    for 2 seconds
-        myRobot.drive(0.0, 0.0);	// stop robot
+        //myRobot.drive(-0.5, 0.0);	// drive forwards half speed
+        //Timer.delay(2.0);		//    for 2 seconds
+        //myRobot.drive(0.0, 0.0);	// stop robot
     }
 
     /**
@@ -71,4 +87,6 @@ public class Robot extends SampleRobot {
     public void test() {
     	Utils.ROBOT_LOGGER.log(INFO, "Test");
     }
+    
+    
 }
