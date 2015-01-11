@@ -39,7 +39,7 @@ public class Robot extends SampleRobot {
     }
 
     /**
-     * Drive left & right motors for 2 seconds then stop
+     * Drive left and right motors for 2 seconds then stop
      * TODO: Run program from log
      */
     public void autonomous() {
