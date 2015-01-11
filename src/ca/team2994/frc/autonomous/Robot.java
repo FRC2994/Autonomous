@@ -2,6 +2,8 @@
 package ca.team2994.frc.autonomous;
 
 
+import static java.util.logging.Level.*;
+import ca.team2994.frc.utils.Utils;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Joystick;
@@ -31,12 +33,18 @@ public class Robot extends SampleRobot {
         myRobot = new RobotDrive(0, 1);
         myRobot.setExpiration(0.1);
         stick = new Joystick(0);
+        
+		Utils.configureRobotLogger();
+		Utils.ROBOT_LOGGER.log(INFO, "Constructer");
     }
 
     /**
-     * Drive left & right motors for 2 seconds then stop
+     * Drive left and right motors for 2 seconds then stop
+     * TODO: Run program from log
      */
     public void autonomous() {
+    	Utils.ROBOT_LOGGER.log(INFO, "Autonomous");
+    	
         myRobot.setSafetyEnabled(false);
         myRobot.drive(-0.5, 0.0);	// drive forwards half speed
         Timer.delay(2.0);		//    for 2 seconds
@@ -45,8 +53,10 @@ public class Robot extends SampleRobot {
 
     /**
      * Runs the motors with arcade steering.
+     * TODO: Log waypoints
      */
     public void operatorControl() {
+    	Utils.ROBOT_LOGGER.log(INFO, "Tele-Op");
         myRobot.setSafetyEnabled(true);
         while (isOperatorControl() && isEnabled()) {
             myRobot.arcadeDrive(stick); // drive with arcade style (use right stick)
@@ -56,7 +66,9 @@ public class Robot extends SampleRobot {
 
     /**
      * Runs during test mode
+     * TODO: Add some sort of waypoint test maybe?  Possibly run testWaypoint.xml
      */
     public void test() {
+    	Utils.ROBOT_LOGGER.log(INFO, "Test");
     }
 }
