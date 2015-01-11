@@ -19,6 +19,11 @@ import java.util.logging.SimpleFormatter;
 public class Utils {
 	
 	/**
+	 * The location of the calibration file
+	 */
+	public static final String CALIBRATION_OUTPUT_FILE_LOC = "/home/lvuser/calibration.txt";
+	
+	/**
 	 * Location of Autonomous output file
 	 */
 	public static final String AUTONOMOUS_OUTPUT_FILE_LOC = "/home/lvuser/auto.log";
