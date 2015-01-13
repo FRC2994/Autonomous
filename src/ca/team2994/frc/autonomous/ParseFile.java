@@ -14,8 +14,8 @@ import edu.wpi.first.wpilibj.Talon;
 /**
  * This class is used for parsing a text file for use during autonomous mode
  * 
- * @author <a href="http://github.com/eandr127">eandr127</a>
- * @author <a href="http://github.com/JackMc">JackMc</a>
+ * @author <a href="https://github.com/eandr127">eandr127</a>
+ * @author <a href="https://github.com/JackMc">JackMc</a>
  *
  */
 public class ParseFile {

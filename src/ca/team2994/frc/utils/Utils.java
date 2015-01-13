@@ -12,8 +12,8 @@ import java.util.logging.SimpleFormatter;
 /**
  * A Utilities class
  * 
- * @author <a href="http://github.com/eandr127">eandr127</a>
- * @author <a href="http://github.com/JackMc">JackMc</a>
+ * @author <a href="https://github.com/eandr127">eandr127</a>
+ * @author <a href="https://github.com/JackMc">JackMc</a>
  *
  */
 public class Utils {

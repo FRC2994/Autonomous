@@ -4,8 +4,12 @@ package ca.team2994.frc.autonomous;
 
 import static java.util.logging.Level.INFO;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 
+import ca.team2994.frc.utils.ButtonEntry;
 import ca.team2994.frc.utils.EJoystick;
 import ca.team2994.frc.utils.Utils;
 import edu.wpi.first.wpilibj.Encoder;
@@ -48,12 +52,32 @@ public class Robot extends SampleRobot {
     	encoderA = new Encoder(0, 1, false);
     	encoderB = new Encoder(2, 3, true);
     	
-        myRobot = new RobotDrive(motorA, motorB);
+        myRobot = new RobotDrive(motorB, motorA);
         myRobot.setExpiration(0.1);
         stick = new EJoystick(0);
         
 		Utils.configureRobotLogger();
 		Utils.ROBOT_LOGGER.log(INFO, "Constructer");
+		
+		BufferedReader br;
+		try {
+			br = new BufferedReader(new FileReader(new File("/home/lvuser/" + Utils.CALIBRATION_OUTPUT_FILE_LOC)));
+			String line = null;
+			while((line = br.readLine()) != null) {
+				line = line.replaceAll("\\s", "");
+				if(!line.startsWith("//") && !line.isEmpty()) {
+					String[] s = line.split(",");
+					double encoderAConst = Double.parseDouble(s[0]);
+					double encoderBConst = Double.parseDouble(s[1]);
+					
+					encoderA.setDistancePerPulse(encoderAConst);
+					encoderB.setDistancePerPulse(encoderBConst);
+				}
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
     /**
@@ -61,6 +85,7 @@ public class Robot extends SampleRobot {
      * TODO: Run program from log
      */
     public void autonomous() {
+    	
     	Utils.ROBOT_LOGGER.log(INFO, "Autonomous");
     	
     	new ParseFile(new File(Utils.AUTONOMOUS_OUTPUT_FILE_LOC), new Talon[] {
@@ -99,14 +124,27 @@ public class Robot extends SampleRobot {
     	encoderA.reset();
     	encoderB.reset();
     	
+    	stick.enableButton(2);
+    	
     	int i = 0;
-    	while(i != 2) {
-    		i = stick.getEvent(1);
+    	while(i != ButtonEntry.EVENT_CLOSED) {
+    		stick.update();
+    		if(!isTest()) {
+    			return;
+    		}
+    		myRobot.arcadeDrive(stick); // drive with arcade style (use right stick)
+    		i = stick.getEvent(2);
     	}
     	
-    	Utils.writeLineToFile("//Encoder A, Distance Travelled: 5ft, Number of encoder ticks: " + encoderA.getDistance() + ", Calibration constant: " + 5 / encoderA.getDistance(), new File(Utils.AUTONOMOUS_OUTPUT_FILE_LOC));
-    	Utils.writeLineToFile("//Encoder B, Distance Travelled: 5ft, Number of encoder ticks: " + encoderB.getDistance() + ", Calibration constant: " + 5 / encoderB.getDistance(), new File(Utils.AUTONOMOUS_OUTPUT_FILE_LOC));
-    	Utils.writeLineToFile(5 / encoderA.getDistance() + ", " + 5 / encoderB.getDistance(), new File(Utils.AUTONOMOUS_OUTPUT_FILE_LOC));
+    	myRobot.drive(0, 0);
+    	
+    	Utils.writeLineToFile("//Encoder A (Left), Distance Travelled: 5ft, Number of encoder ticks: " + encoderA.get()
+    			+ ", Calibration constant: " + 5 / encoderA.get(), 
+    			new File(Utils.CALIBRATION_OUTPUT_FILE_LOC));
+    	Utils.writeLineToFile("//Encoder B (Right), Distance Travelled: 5ft, Number of encoder ticks: " + encoderB.get()
+    			+ ", Calibration constant: " + 5 / encoderB.get(), 
+    			new File(Utils.CALIBRATION_OUTPUT_FILE_LOC));
+    	Utils.writeLineToFile(5 / encoderA.get() + ", " + 5 / encoderB.get(), new File(Utils.CALIBRATION_OUTPUT_FILE_LOC));
     }
     
     
