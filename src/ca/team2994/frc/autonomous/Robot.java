@@ -49,7 +49,7 @@ public class Robot extends SampleRobot {
     	motorA = new Talon(0);
     	motorB = new Talon(1);
     	
-    	encoderA = new Encoder(0, 1, false);
+    	encoderA = new Encoder(0, 1, true);
     	encoderB = new Encoder(2, 3, true);
     	
         myRobot = new RobotDrive(motorB, motorA);
@@ -61,7 +61,7 @@ public class Robot extends SampleRobot {
 		
 		BufferedReader br;
 		try {
-			br = new BufferedReader(new FileReader(new File("/home/lvuser/" + Utils.CALIBRATION_OUTPUT_FILE_LOC)));
+			br = new BufferedReader(new FileReader(new File(Utils.CALIBRATION_OUTPUT_FILE_LOC)));
 			String line = null;
 			while((line = br.readLine()) != null) {
 				line = line.replaceAll("\\s", "");
@@ -72,31 +72,39 @@ public class Robot extends SampleRobot {
 					
 					encoderA.setDistancePerPulse(encoderAConst);
 					encoderB.setDistancePerPulse(encoderBConst);
+					break;
 				}
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			encoderA.setDistancePerPulse(1);
+			encoderB.setDistancePerPulse(1);
 		}
     }
 
     /**
      * Drive left and right motors for 2 seconds then stop
-     * TODO: Run program from log
      */
     public void autonomous() {
-    	
     	Utils.ROBOT_LOGGER.log(INFO, "Autonomous");
+    	myRobot.setSafetyEnabled(false);
     	
-    	new ParseFile(new File(Utils.AUTONOMOUS_OUTPUT_FILE_LOC), new Talon[] {
+    	/*new ParseFile(new File(Utils.AUTONOMOUS_OUTPUT_FILE_LOC), new Talon[] {
     		motorA,
     		motorB
     	}, new Encoder[] {
     		encoderA,
     		encoderB
-    	});
+    	});*/
     	
-        myRobot.setSafetyEnabled(false);
+    	encoderA.reset();
+    	encoderB.reset();
+    	
+    	while((encoderA.getDistance() < 5 || encoderB.getDistance() < 5) && isAutonomous()) {
+    		myRobot.drive(-0.5, 0);
+    	}
+    	
+    	myRobot.drive(0, 0);
+    	  
         //myRobot.drive(-0.5, 0.0);	// drive forwards half speed
         //Timer.delay(2.0);		//    for 2 seconds
         //myRobot.drive(0.0, 0.0);	// stop robot
@@ -138,13 +146,29 @@ public class Robot extends SampleRobot {
     	
     	myRobot.drive(0, 0);
     	
-    	Utils.writeLineToFile("//Encoder A (Left), Distance Travelled: 5ft, Number of encoder ticks: " + encoderA.get()
-    			+ ", Calibration constant: " + 5 / encoderA.get(), 
+    	int encoderAValue = encoderA.get();
+    	int encoderBValue = encoderB.get();
+    	
+    	double encoderAConstant = 0;
+    	double encoderBConstant = 0;
+    	
+    	if(encoderAValue != 0) {
+    		encoderAConstant = 5.0 / encoderAValue;
+    	}
+    	
+    	if(encoderBValue != 0) {
+    		encoderBConstant = 5.0 / encoderBValue;
+    	}
+    	
+		Utils.writeLineToFile("//Encoder A (Left), Distance Travelled: 5ft, Number of encoder ticks: " + encoderAValue
+    			+ ", Calibration constant: " + encoderAConstant, 
     			new File(Utils.CALIBRATION_OUTPUT_FILE_LOC));
-    	Utils.writeLineToFile("//Encoder B (Right), Distance Travelled: 5ft, Number of encoder ticks: " + encoderB.get()
-    			+ ", Calibration constant: " + 5 / encoderB.get(), 
+    	
+    	Utils.writeLineToFile("//Encoder B (Right), Distance Travelled: 5ft, Number of encoder ticks: " + encoderBValue
+    			+ ", Calibration constant: " + encoderBConstant, 
     			new File(Utils.CALIBRATION_OUTPUT_FILE_LOC));
-    	Utils.writeLineToFile(5 / encoderA.get() + ", " + 5 / encoderB.get(), new File(Utils.CALIBRATION_OUTPUT_FILE_LOC));
+    	
+    	Utils.writeLineToFile(encoderAConstant + ", " + encoderBConstant, new File(Utils.CALIBRATION_OUTPUT_FILE_LOC));
     }
     
     
