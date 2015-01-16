@@ -33,6 +33,9 @@ import edu.wpi.first.wpilibj.Timer;
  * WARNING: While it may look like a good choice to use for your code if you're inexperienced,
  * don't. Unless you know what you are doing, complex code will be much more difficult under
  * this system. Use IterativeRobot or Command-Based instead if you're new.
+ * 
+ * @author <a href="https://github.com/eandr127">eandr127</a>
+ * @author <a href="https://github.com/JackMc">JackMc</a>
  */
 public class Robot extends SampleRobot {
     RobotDrive myRobot;
@@ -88,22 +91,24 @@ public class Robot extends SampleRobot {
     	Utils.ROBOT_LOGGER.log(INFO, "Autonomous");
     	myRobot.setSafetyEnabled(false);
     	
-    	/*new ParseFile(new File(Utils.AUTONOMOUS_OUTPUT_FILE_LOC), new Talon[] {
-    		motorA,
-    		motorB
-    	}, new Encoder[] {
-    		encoderA,
-    		encoderB
-    	});*/
+    	new ParseFile(new File(Utils.AUTONOMOUS_OUTPUT_FILE_LOC),
+    		new Encoder[] {
+    			encoderA,
+    			encoderB
+    		}, 
+    		myRobot);
     	
     	encoderA.reset();
     	encoderB.reset();
     	
-    	while((encoderA.getDistance() < 5 || encoderB.getDistance() < 5) && isAutonomous()) {
+    	/*while((encoderA.getDistance() < 5 || encoderB.getDistance() < 5) && isAutonomous()) {
     		myRobot.drive(-0.5, 0);
-    	}
+    	}*/
     	
-    	myRobot.drive(0, 0);
+    	//Drive 5ft at half speed
+    	Utils.driveDistance(0.5, 0.0, 5, 5, encoderA, encoderB, myRobot);
+    	
+    	
     	  
         //myRobot.drive(-0.5, 0.0);	// drive forwards half speed
         //Timer.delay(2.0);		//    for 2 seconds

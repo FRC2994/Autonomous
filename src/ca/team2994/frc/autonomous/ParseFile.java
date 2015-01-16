@@ -4,12 +4,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Timer;
-import java.util.TimerTask;
 
-import ca.team2994.frc.utils.Utils;
 import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.Talon;
+import edu.wpi.first.wpilibj.RobotDrive;
 
 /**
  * This class is used for parsing a text file for use during autonomous mode
@@ -21,9 +18,10 @@ import edu.wpi.first.wpilibj.Talon;
 public class ParseFile {
 	
 	/**
-	 * The talon motors on the robot
+	 * The robot drive to move the robot with
 	 */
-	private final Talon[] motors;
+	@SuppressWarnings("unused")
+	private final RobotDrive drive;
 	
 	/**
 	 * The shaft encoders on the robot
@@ -37,9 +35,9 @@ public class ParseFile {
 	 * @param file The file to be parsed
 	 * @param t The Talons to be passed to {@code motors}
 	 */
-	public ParseFile(File file, Talon[] t, Encoder[] e) {
+	public ParseFile(File file, Encoder[] e, RobotDrive drive) {
+		this.drive = drive;
 		encoders = e;
-		motors = t;
 		start(file);
 	}
 
@@ -48,10 +46,8 @@ public class ParseFile {
 	 * @param file The to be opened and parsed
 	 */
 	public void start(File file) {
-		if(motors == null)
-			return;
 		
-		try {
+		/*try {
 			@SuppressWarnings("resource")
 			final BufferedReader br = new BufferedReader(new FileReader(file));
 			final Timer t = new Timer();
@@ -88,6 +84,19 @@ public class ParseFile {
 		catch(Exception ex) {
 			Utils.ROBOT_LOGGER.severe("Error!");
 			ex.printStackTrace();
+		}*/
+		try {
+			String line = null;
+			@SuppressWarnings("resource")
+			BufferedReader br = new BufferedReader(new FileReader(file));
+			while((line = br.readLine()) != null) {
+				line = line.replaceAll("\\s", "");
+				if(!line.startsWith("//") && !line.isEmpty()) {
+					parseString(line);
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -106,17 +115,16 @@ public class ParseFile {
 	 * @param args The array of Strings to be used
 	 */
 	private void handleStateArray(String[] args) {
-
-		Utils.ROBOT_LOGGER.info("\n================================");
-
+		@SuppressWarnings("unused")
 		int i = 0;
 		for(String s : args) {
+			@SuppressWarnings("unused")
 			double val = Double.parseDouble(s);
-			motors[i].set(val);
-			Utils.ROBOT_LOGGER.info("Motor " + i + ": " + val);
+			
+			
+			
 			i++;
 		}
-		Utils.ROBOT_LOGGER.info("================================\n");
 	}
 
 

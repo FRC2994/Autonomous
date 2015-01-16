@@ -9,6 +9,9 @@ import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
+import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.RobotDrive;
+
 /**
  * A Utilities class
  * 
@@ -105,4 +108,21 @@ public class Utils {
 	public static boolean writeLineToFile(String line) {
 		return writeLineToFile(line, new File(AUTONOMOUS_OUTPUT_FILE_LOC));
 	}
+	
+	/**
+	 * Drive until a distance is reached
+	 * @param speed The speed to drive at
+	 * @param turnMagnitude How much to turn
+	 * @param distance How far to drive
+	 */
+	public static void driveDistance(double speed, double turnMagnitude, int aDistance, int bDistance, Encoder encoderA, Encoder encoderB, RobotDrive drive) {
+		encoderA.reset();
+		encoderB.reset();
+		
+    	while((encoderA.getDistance() < aDistance || encoderB.getDistance() < bDistance) && !drive.isSafetyEnabled()) {
+    		drive.drive(speed * -1, turnMagnitude);
+    	}
+    	
+    	drive.drive(0, 0);
+	}	
 }
