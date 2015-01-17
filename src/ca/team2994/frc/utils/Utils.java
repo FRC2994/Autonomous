@@ -101,7 +101,7 @@ public class Utils {
 	}
 	
 	/**
-	 * Passes line on to {link #writeLineToFile(String, File) writeLineToFile(java.lang.String line, java.io.File file)} using AUTONOMOUS_OUTPUT_FILE_LOC for the location parameter
+	 * Passes line on to {@link #writeLineToFile(String, File) writeLineToFile(java.lang.String line, java.io.File file)} using AUTONOMOUS_OUTPUT_FILE_LOC for the location parameter
 	 * @param line The String to write to the file
 	 * @return Whether the operation was successful or not
 	 */

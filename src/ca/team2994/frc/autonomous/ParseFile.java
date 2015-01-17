@@ -31,7 +31,7 @@ public class ParseFile {
 	
 
 	/**
-	 * Assigns {@code motors} to {@code t} then passes on to {link #start(File) start(java.io.File file)}
+	 * Assigns {@code e} to {@code encoders} then passes on to {@link #start(File) start(java.io.File file)}
 	 * @param file The file to be parsed
 	 * @param e The Encoders to use
 	 * @param drive The RobotDrive to drive with
@@ -102,7 +102,7 @@ public class ParseFile {
 	}
 
 	/**
-	 * Splits string by comma and passes it on to {link #handleStateArray(String[]) handleStateArray(java.lang.String[])}
+	 * Splits string by comma and passes it on to {@link #handleStateArray(String[]) handleStateArray(java.lang.String[])}
 	 * @param s The string to be processed 
 	 */
 	private void parseString(String s) {	
