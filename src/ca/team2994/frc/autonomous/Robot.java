@@ -52,8 +52,8 @@ public class Robot extends SampleRobot {
     	motorA = new Talon(0);
     	motorB = new Talon(1);
     	
-    	encoderA = new Encoder(0, 1, true);
-    	encoderB = new Encoder(2, 3, true);
+    	encoderA = new Encoder(0, 1, false);
+    	encoderB = new Encoder(2, 3, false);
     	
         myRobot = new RobotDrive(motorB, motorA);
         myRobot.setExpiration(0.1);
@@ -106,13 +106,13 @@ public class Robot extends SampleRobot {
     	}*/
     	
     	//Drive 5ft at half speed
-    	Utils.driveDistance(0.5, 0.0, 5, 5, encoderA, encoderB, myRobot);
+    	//Utils.driveDistance(0.5, 0.0, 5, 5, encoderA, encoderB, myRobot);
     	
     	
     	  
         //myRobot.drive(-0.5, 0.0);	// drive forwards half speed
         //Timer.delay(2.0);		//    for 2 seconds
-        //myRobot.drive(0.0, 0.0);	// stop robot
+        myRobot.drive(0.0, 0.0);	// stop robot
     }
 
     /**

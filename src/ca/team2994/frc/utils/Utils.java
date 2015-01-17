@@ -129,4 +129,53 @@ public class Utils {
     	
     	drive.drive(0, 0);
 	}	
+	
+	public static void logException(Logger log, Exception e) {
+		log.severe(e.getMessage());
+	}
+	
+	/**
+	 * Drive until a distance is reached
+	 * @param speedA The speed to drive at
+	 * @param speedB How much to turn
+	 * @param aDistance How far to drive on the first motor
+	 * @param bDistance How much to drive on the second motor
+	 * @param encoderA The first Encoder
+	 * @param encoderB the second Encoder
+	 * @param drive The RobotDrive to use
+	 */
+	public static void setLeftRightMotorOutputsDistance(double speedA, double speedB, double aDistance, double bDistance, Encoder encoderA, Encoder encoderB, RobotDrive drive) {
+		encoderA.reset();
+		encoderB.reset();
+		
+		if(encoderA.getDistance() < aDistance && encoderB.getDistance() < bDistance) {
+			while(((encoderA.getDistance() * -1 < aDistance) || (encoderB.getDistance() *-1 < bDistance)) && !drive.isSafetyEnabled()) {
+				drive.setLeftRightMotorOutputs(speedA * -1, speedB * -1);
+			}
+		}
+		else if(encoderA.getDistance() > aDistance && encoderB.getDistance() < bDistance) {
+			while(((encoderA.getDistance() * -1 > aDistance) || (encoderB.getDistance() * -1 < bDistance)) && !drive.isSafetyEnabled()) {
+				drive.setLeftRightMotorOutputs(speedA, speedB);
+			}
+		}
+		
+		/*
+		 * works well ^
+		 *			  |
+		 * needs work v
+		 * 
+		 */
+		
+		else if(encoderA.getDistance() < aDistance && encoderB.getDistance() > bDistance) {
+			while(((encoderA.getDistance() * -1 < aDistance) || (encoderB.getDistance() * -1 > bDistance)) && !drive.isSafetyEnabled()) {
+				drive.setLeftRightMotorOutputs(speedA, speedB);
+			}
+		}
+		else {
+			while(((encoderA.getDistance() > aDistance) || (encoderB.getDistance() > bDistance)) && !drive.isSafetyEnabled()) {
+				drive.setLeftRightMotorOutputs(speedA * -1, speedB * -1);
+			}
+		}
+    	drive.setLeftRightMotorOutputs(0, 0);
+	}		
 }

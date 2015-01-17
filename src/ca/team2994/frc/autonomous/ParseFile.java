@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
+import ca.team2994.frc.utils.Utils;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.RobotDrive;
 
@@ -20,13 +21,11 @@ public class ParseFile {
 	/**
 	 * The robot drive to move the robot with
 	 */
-	@SuppressWarnings("unused")
 	private final RobotDrive drive;
 	
 	/**
 	 * The shaft encoders on the robot
 	 */
-	@SuppressWarnings("unused")
 	private final Encoder[] encoders;
 	
 
@@ -116,16 +115,37 @@ public class ParseFile {
 	 * @param args The array of Strings to be used
 	 */
 	private void handleStateArray(String[] args) {
-		@SuppressWarnings("unused")
+		double encoderADistance = 0;
+		double encoderBDistance = 0;
+		double speedA = 0;
+		double speedB = 0;
+		
 		int i = 0;
 		for(String s : args) {
-			@SuppressWarnings("unused")
 			double val = Double.parseDouble(s);
 			
-			
-			
+			switch(i) {
+				case 0:
+					encoderADistance = val;
+					break;
+				case 1:
+					encoderBDistance = val;
+					break;
+				case 2:
+					speedA = val;
+					break;
+				case 3:
+					speedB = val;
+					break;
+				default:
+					Utils.ROBOT_LOGGER.severe("Error!");
+					break;
+			}
 			i++;
 		}
+		
+		Utils.setLeftRightMotorOutputsDistance(speedA, speedB, encoderADistance, encoderBDistance,
+				encoders[0], encoders[1], drive);
 	}
 
 
