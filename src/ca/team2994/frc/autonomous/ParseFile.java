@@ -33,7 +33,8 @@ public class ParseFile {
 	/**
 	 * Assigns {@code motors} to {@code t} then passes on to {link #start(File) start(java.io.File file)}
 	 * @param file The file to be parsed
-	 * @param t The Talons to be passed to {@code motors}
+	 * @param e The Encoders to use
+	 * @param drive The RobotDrive to drive with
 	 */
 	public ParseFile(File file, Encoder[] e, RobotDrive drive) {
 		this.drive = drive;

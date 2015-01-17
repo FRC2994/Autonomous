@@ -113,7 +113,11 @@ public class Utils {
 	 * Drive until a distance is reached
 	 * @param speed The speed to drive at
 	 * @param turnMagnitude How much to turn
-	 * @param distance How far to drive
+	 * @param aDistance How far to drive on the first motor
+	 * @param bDistance How much to drive on the second motor
+	 * @param encoderA The first Encoder
+	 * @param encoderB the second Encoder
+	 * @param drive The RobotDrive to use
 	 */
 	public static void driveDistance(double speed, double turnMagnitude, int aDistance, int bDistance, Encoder encoderA, Encoder encoderB, RobotDrive drive) {
 		encoderA.reset();
