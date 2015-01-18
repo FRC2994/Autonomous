@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
@@ -72,8 +74,7 @@ public class Utils {
 			});
 			
 		} catch (SecurityException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Utils.logException(Utils.ROBOT_LOGGER, e);
 		}
 	}
 	
@@ -89,8 +90,7 @@ public class Utils {
 			try {
 				stream = new PrintStream(new FileOutputStream(file, false));
 			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Utils.logException(Utils.ROBOT_LOGGER, e);
 				return false;	
 			}
 		}
@@ -101,7 +101,7 @@ public class Utils {
 	}
 	
 	/**
-	 * Passes line on to {link #writeLineToFile(String, File) writeLineToFile(java.lang.String line, java.io.File file)} using AUTONOMOUS_OUTPUT_FILE_LOC for the location parameter
+	 * Passes line on to {@link #writeLineToFile(String, File) writeLineToFile(java.lang.String line, java.io.File file)} using AUTONOMOUS_OUTPUT_FILE_LOC for the location parameter
 	 * @param line The String to write to the file
 	 * @return Whether the operation was successful or not
 	 */
@@ -113,7 +113,11 @@ public class Utils {
 	 * Drive until a distance is reached
 	 * @param speed The speed to drive at
 	 * @param turnMagnitude How much to turn
-	 * @param distance How far to drive
+	 * @param aDistance How far to drive on the first motor
+	 * @param bDistance How much to drive on the second motor
+	 * @param encoderA The first Encoder
+	 * @param encoderB the second Encoder
+	 * @param drive The RobotDrive to use
 	 */
 	public static void driveDistance(double speed, double turnMagnitude, int aDistance, int bDistance, Encoder encoderA, Encoder encoderB, RobotDrive drive) {
 		encoderA.reset();
@@ -125,4 +129,40 @@ public class Utils {
     	
     	drive.drive(0, 0);
 	}	
+	
+	public static void logException(Logger log, Exception e) {
+		StringWriter errors = new StringWriter();
+		e.printStackTrace(new PrintWriter(errors));
+		String exception = errors.toString();
+		
+		log.severe(exception);
+	}
+	
+	/**
+	 * Drive until a distance is reached
+	 * @param speedA The speed to drive at
+	 * @param speedB How much to turn
+	 * @param aDistance How far to drive on the first motor
+	 * @param bDistance How much to drive on the second motor
+	 * @param encoderA The first Encoder
+	 * @param encoderB the second Encoder
+	 * @param drive The RobotDrive to use
+	 */
+	public static void setLeftRightMotorOutputsDistance(double speedA, double speedB, double aDistance, double bDistance, Encoder encoderA, Encoder encoderB, RobotDrive drive) {
+		encoderA.reset();
+		encoderB.reset();
+
+		
+		if(aDistance < 0 || bDistance < 0) {
+			IllegalArgumentException e = new IllegalArgumentException("Distances must be positive"); 
+			logException(ROBOT_LOGGER, e);
+			throw e;
+		}
+		
+		while(((Math.abs(encoderA.getDistance()) < aDistance) || (Math.abs(encoderB.getDistance()) < bDistance)) && !drive.isSafetyEnabled()) {
+			drive.setLeftRightMotorOutputs(speedA, speedB);
+		}
+		
+    	drive.setLeftRightMotorOutputs(0, 0);
+	}
 }

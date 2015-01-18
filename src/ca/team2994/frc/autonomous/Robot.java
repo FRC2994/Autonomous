@@ -48,14 +48,13 @@ public class Robot extends SampleRobot {
     final Encoder encoderB;
 
     public Robot() {
-
     	motorA = new Talon(0);
     	motorB = new Talon(1);
     	
-    	encoderA = new Encoder(0, 1, true);
-    	encoderB = new Encoder(2, 3, true);
+    	encoderA = new Encoder(0, 1, false);
+    	encoderB = new Encoder(2, 3, false);
     	
-        myRobot = new RobotDrive(motorB, motorA);
+        myRobot = new RobotDrive(motorA, motorB);
         myRobot.setExpiration(0.1);
         stick = new EJoystick(0);
         
@@ -79,6 +78,7 @@ public class Robot extends SampleRobot {
 				}
 			}
 		} catch (IOException e) {
+			Utils.logException(Utils.ROBOT_LOGGER, e);
 			encoderA.setDistancePerPulse(1);
 			encoderB.setDistancePerPulse(1);
 		}
@@ -101,18 +101,7 @@ public class Robot extends SampleRobot {
     	encoderA.reset();
     	encoderB.reset();
     	
-    	/*while((encoderA.getDistance() < 5 || encoderB.getDistance() < 5) && isAutonomous()) {
-    		myRobot.drive(-0.5, 0);
-    	}*/
-    	
-    	//Drive 5ft at half speed
-    	Utils.driveDistance(0.5, 0.0, 5, 5, encoderA, encoderB, myRobot);
-    	
-    	
-    	  
-        //myRobot.drive(-0.5, 0.0);	// drive forwards half speed
-        //Timer.delay(2.0);		//    for 2 seconds
-        //myRobot.drive(0.0, 0.0);	// stop robot
+        myRobot.drive(0.0, 0.0);	// stop robot
     }
 
     /**
@@ -123,11 +112,12 @@ public class Robot extends SampleRobot {
     	Utils.ROBOT_LOGGER.log(INFO, "Tele-Op");
         myRobot.setSafetyEnabled(true);
         while (isOperatorControl() && isEnabled()) {
-            myRobot.arcadeDrive(stick); // drive with arcade style (use right stick)
+            myRobot.arcadeDrive(-stick.getY(), -stick.getX()); // drive with arcade style (use right stick)
             Timer.delay(0.005);		// wait for a motor update time
         }
     }
 
+    
     /**
      * Calibration for encoders
      * TODO: Tell user to drive 5 feet
