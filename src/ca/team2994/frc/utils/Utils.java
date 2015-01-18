@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
@@ -72,8 +74,7 @@ public class Utils {
 			});
 			
 		} catch (SecurityException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Utils.logException(Utils.ROBOT_LOGGER, e);
 		}
 	}
 	
@@ -89,8 +90,7 @@ public class Utils {
 			try {
 				stream = new PrintStream(new FileOutputStream(file, false));
 			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Utils.logException(Utils.ROBOT_LOGGER, e);
 				return false;	
 			}
 		}
@@ -131,7 +131,11 @@ public class Utils {
 	}	
 	
 	public static void logException(Logger log, Exception e) {
-		log.severe(e.getMessage());
+		StringWriter errors = new StringWriter();
+		e.printStackTrace(new PrintWriter(errors));
+		String exception = errors.toString();
+		
+		log.severe(exception);
 	}
 	
 	/**
@@ -147,35 +151,18 @@ public class Utils {
 	public static void setLeftRightMotorOutputsDistance(double speedA, double speedB, double aDistance, double bDistance, Encoder encoderA, Encoder encoderB, RobotDrive drive) {
 		encoderA.reset();
 		encoderB.reset();
+
 		
-		if(encoderA.getDistance() < aDistance && encoderB.getDistance() < bDistance) {
-			while(((encoderA.getDistance() * -1 < aDistance) || (encoderB.getDistance() *-1 < bDistance)) && !drive.isSafetyEnabled()) {
-				drive.setLeftRightMotorOutputs(speedA * -1, speedB * -1);
-			}
-		}
-		else if(encoderA.getDistance() > aDistance && encoderB.getDistance() < bDistance) {
-			while(((encoderA.getDistance() * -1 > aDistance) || (encoderB.getDistance() * -1 < bDistance)) && !drive.isSafetyEnabled()) {
-				drive.setLeftRightMotorOutputs(speedA, speedB);
-			}
+		if(aDistance < 0 || bDistance < 0) {
+			IllegalArgumentException e = new IllegalArgumentException("Distances must be positive"); 
+			logException(ROBOT_LOGGER, e);
+			throw e;
 		}
 		
-		/*
-		 * works well ^
-		 *			  |
-		 * needs work v
-		 * 
-		 */
+		while(((Math.abs(encoderA.getDistance()) < aDistance) || (Math.abs(encoderB.getDistance()) < bDistance)) && !drive.isSafetyEnabled()) {
+			drive.setLeftRightMotorOutputs(speedA, speedB);
+		}
 		
-		else if(encoderA.getDistance() < aDistance && encoderB.getDistance() > bDistance) {
-			while(((encoderA.getDistance() * -1 < aDistance) || (encoderB.getDistance() * -1 > bDistance)) && !drive.isSafetyEnabled()) {
-				drive.setLeftRightMotorOutputs(speedA, speedB);
-			}
-		}
-		else {
-			while(((encoderA.getDistance() > aDistance) || (encoderB.getDistance() > bDistance)) && !drive.isSafetyEnabled()) {
-				drive.setLeftRightMotorOutputs(speedA * -1, speedB * -1);
-			}
-		}
     	drive.setLeftRightMotorOutputs(0, 0);
-	}		
+	}
 }
