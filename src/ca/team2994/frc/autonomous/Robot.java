@@ -11,6 +11,7 @@ import java.io.IOException;
 
 import ca.team2994.frc.utils.ButtonEntry;
 import ca.team2994.frc.utils.EJoystick;
+import ca.team2994.frc.utils.SimPID;
 import ca.team2994.frc.utils.Utils;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.RobotDrive;
@@ -38,6 +39,8 @@ import edu.wpi.first.wpilibj.Timer;
  * @author <a href="https://github.com/JackMc">JackMc</a>
  */
 public class Robot extends SampleRobot {
+	private static final boolean USE_PID = false;
+	
     RobotDrive myRobot;
     EJoystick stick;
     
@@ -47,7 +50,12 @@ public class Robot extends SampleRobot {
     final Encoder encoderA;
     final Encoder encoderB;
 
+    SimPID sim = null;
+    
     public Robot() {
+    	
+    	sim = new SimPID(0.08, 0.01, 0.3, 0.1);
+    	
     	motorA = new Talon(0);
     	motorB = new Talon(1);
     	
@@ -91,17 +99,39 @@ public class Robot extends SampleRobot {
     	Utils.ROBOT_LOGGER.log(INFO, "Autonomous");
     	myRobot.setSafetyEnabled(false);
     	
-    	new ParseFile(new File(Utils.AUTONOMOUS_OUTPUT_FILE_LOC),
-    		new Encoder[] {
-    			encoderA,
-    			encoderB
-    		}, 
-    		myRobot);
+    	encoderA.reset();
+    	encoderB.reset();
     	
+    	
+    	
+    	if(USE_PID) 
+    		PIDTest();
+    	else {
+    		new ParseFile(new File(Utils.AUTONOMOUS_OUTPUT_FILE_LOC),
+    			new Encoder[] {
+    				encoderA,
+    				encoderB
+    			}, 
+    			myRobot);
+    	}
+    		
     	encoderA.reset();
     	encoderB.reset();
     	
         myRobot.drive(0.0, 0.0);	// stop robot
+    }
+    
+    private void PIDTest() {
+    	sim.setErrorEpsilon(2);
+    	sim.setDoneRange(3);
+    	sim.setMaxOutput(0.5);
+    	sim.setMinDoneCycles(5);
+    	
+    	myRobot.drive(0.5, 0);
+    	sim.setDesiredValue(5);
+    	while(!sim.isDone()) {
+    		System.out.println(sim.calcPID((encoderA.getDistance() + encoderB.getDistance()) / 2));
+    	}
     }
 
     /**
@@ -112,7 +142,7 @@ public class Robot extends SampleRobot {
     	Utils.ROBOT_LOGGER.log(INFO, "Tele-Op");
         myRobot.setSafetyEnabled(true);
         while (isOperatorControl() && isEnabled()) {
-            myRobot.arcadeDrive(-stick.getY(), -stick.getX()); // drive with arcade style (use right stick)
+            myRobot.arcadeDrive(-stick.getY(), -stick.getX()); // drive with arcade style (use right stick) (inverted)
             Timer.delay(0.005);		// wait for a motor update time
         }
     }
