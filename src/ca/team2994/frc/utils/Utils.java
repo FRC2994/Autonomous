@@ -11,6 +11,8 @@ import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
+import com.google.common.base.Splitter;
+
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.RobotDrive;
 
@@ -22,6 +24,8 @@ import edu.wpi.first.wpilibj.RobotDrive;
  *
  */
 public class Utils {
+	
+	public static final Splitter SPLITTER = Splitter.on(',').trimResults().omitEmptyStrings();
 	
 	/**
 	 * The location of the calibration file

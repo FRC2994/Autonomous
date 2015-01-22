@@ -4,10 +4,13 @@ package ca.team2994.frc.autonomous;
 
 import static java.util.logging.Level.INFO;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.util.List;
+
+import com.google.common.base.Charsets;
+import com.google.common.collect.Lists;
+import com.google.common.io.Files;
 
 import ca.team2994.frc.utils.ButtonEntry;
 import ca.team2994.frc.utils.EJoystick;
@@ -39,6 +42,8 @@ import edu.wpi.first.wpilibj.Timer;
  * @author <a href="https://github.com/JackMc">JackMc</a>
  */
 public class Robot extends SampleRobot {
+	private static final boolean SAVE_WAYPOINTS = true;
+	
 	private static final boolean USE_PID = false;
 	
     RobotDrive myRobot;
@@ -50,7 +55,7 @@ public class Robot extends SampleRobot {
     final Encoder encoderA;
     final Encoder encoderB;
 
-    SimPID sim = null;
+    private SimPID sim;
     
     public Robot() {
     	
@@ -69,22 +74,15 @@ public class Robot extends SampleRobot {
 		Utils.configureRobotLogger();
 		Utils.ROBOT_LOGGER.log(INFO, "Constructer");
 		
-		BufferedReader br;
 		try {
-			br = new BufferedReader(new FileReader(new File(Utils.CALIBRATION_OUTPUT_FILE_LOC)));
-			String line = null;
-			while((line = br.readLine()) != null) {
-				line = line.replaceAll("\\s", "");
-				if(!line.startsWith("//") && !line.isEmpty()) {
-					String[] s = line.split(",");
-					double encoderAConst = Double.parseDouble(s[0]);
-					double encoderBConst = Double.parseDouble(s[1]);
-					
-					encoderA.setDistancePerPulse(encoderAConst);
-					encoderB.setDistancePerPulse(encoderBConst);
-					break;
-				}
-			}
+			List<String> guavaResult = Files.readLines(new File(Utils.CALIBRATION_OUTPUT_FILE_LOC), Charsets.UTF_8);
+			String[] s = ((String[]) Lists.newArrayList(Utils.SPLITTER.split(guavaResult.get(0))).toArray());
+			double encoderAConst = Double.parseDouble(s[0]);
+			double encoderBConst = Double.parseDouble(s[1]);
+				
+			encoderA.setDistancePerPulse(encoderAConst);
+			encoderB.setDistancePerPulse(encoderBConst);
+			
 		} catch (IOException e) {
 			Utils.logException(Utils.ROBOT_LOGGER, e);
 			encoderA.setDistancePerPulse(1);
@@ -139,12 +137,17 @@ public class Robot extends SampleRobot {
      * TODO: Log waypoints
      */
     public void operatorControl() {
-    	Utils.ROBOT_LOGGER.log(INFO, "Tele-Op");
-        myRobot.setSafetyEnabled(true);
-        while (isOperatorControl() && isEnabled()) {
-            myRobot.arcadeDrive(-stick.getY(), -stick.getX()); // drive with arcade style (use right stick) (inverted)
-            Timer.delay(0.005);		// wait for a motor update time
-        }
+    	if(!SAVE_WAYPOINTS) {
+    		Utils.ROBOT_LOGGER.log(INFO, "Tele-Op");
+    		myRobot.setSafetyEnabled(true);
+    		while (isOperatorControl() && isEnabled()) {
+    			myRobot.arcadeDrive(-stick.getY(), -stick.getX()); // drive with arcade style (use right stick) (inverted)
+    			Timer.delay(0.005);		// wait for a motor update time
+    		}
+    	}
+    	else {
+    		
+    	}
     }
 
     

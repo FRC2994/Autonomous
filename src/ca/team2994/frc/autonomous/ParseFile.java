@@ -1,9 +1,12 @@
 package ca.team2994.frc.autonomous;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.util.List;
+
+import com.google.common.base.Charsets;
+import com.google.common.collect.Lists;
+import com.google.common.io.Files;
 
 import ca.team2994.frc.utils.Utils;
 import edu.wpi.first.wpilibj.Encoder;
@@ -47,28 +50,13 @@ public class ParseFile {
 	 */
 	public void start(File file) {
 		try {
-			String line = null;
-			@SuppressWarnings("resource")
-			BufferedReader br = new BufferedReader(new FileReader(file));
-			while((line = br.readLine()) != null) {
-				line = line.replaceAll("\\s", "");
-				if(!line.startsWith("//") && !line.isEmpty()) {
-					parseString(line);
-				}
+			List<String> guavaResult = Files.readLines(file, Charsets.UTF_8);
+			for(int i = 0; i < guavaResult.size(); i++) {
+				handleStateArray((String[]) Lists.newArrayList(Utils.SPLITTER.split(guavaResult.get(i))).toArray());
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			Utils.logException(Utils.ROBOT_LOGGER, e);
 		}
-	}
-
-	/**
-	 * Splits string by comma and passes it on to {@link #handleStateArray(String[]) handleStateArray(java.lang.String[])}
-	 * @param s The string to be processed 
-	 */
-	private void parseString(String s) {	
-
-		String[] strArray = s.split(",");
-		handleStateArray(strArray);
 	}
 
 	/**
