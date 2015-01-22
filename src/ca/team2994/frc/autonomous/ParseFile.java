@@ -46,45 +46,6 @@ public class ParseFile {
 	 * @param file The to be opened and parsed
 	 */
 	public void start(File file) {
-		
-		/*try {
-			@SuppressWarnings("resource")
-			final BufferedReader br = new BufferedReader(new FileReader(file));
-			final Timer t = new Timer();
-			t.schedule(new TimerTask() {
-
-				@Override
-				public void run() {
-					try {
-						String line = br.readLine();
-
-						if(line == null) {
-							br.close();
-							t.cancel();
-							t.purge();
-							for(Talon t : motors) {
-								t.set(0);
-							}	
-							return;
-						}
-
-						line = line.replaceAll("\\s", "");
-						if(!line.startsWith("//") && !line.isEmpty()) {
-							parseString(line);
-						}
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-
-				}
-
-			}, 0, 1000);
-
-		}
-		catch(Exception ex) {
-			Utils.ROBOT_LOGGER.severe("Error!");
-			ex.printStackTrace();
-		}*/
 		try {
 			String line = null;
 			@SuppressWarnings("resource")
