@@ -45,7 +45,7 @@ public class ParseFile {
 	}
 
 	/**
-	 * Opens file and parses line by line periodically, (Every second), and passing the line on to {@link #parseString(String) parseString(java.lang.String s)}
+	 * Opens file and parses it, and splits it by line, then passes it on to {@link #handleStateArray(String[]) handleStateArray(java.lang.String[] args)}
 	 * @param file The to be opened and parsed
 	 */
 	public void start(File file) {
