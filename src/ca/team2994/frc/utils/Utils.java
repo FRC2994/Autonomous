@@ -25,6 +25,9 @@ import edu.wpi.first.wpilibj.RobotDrive;
  */
 public class Utils {
 	
+	/**
+	 * A splitter to use when splitting strings by commas
+	 */
 	public static final Splitter SPLITTER = Splitter.on(',').trimResults().omitEmptyStrings();
 	
 	/**
