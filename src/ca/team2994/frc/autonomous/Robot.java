@@ -23,40 +23,61 @@ import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Timer;
 
 /**
- * This is a demo program showing the use of the RobotDrive class.
- * The SampleRobot class is the base of a robot application that will automatically call your
- * Autonomous and OperatorControl methods at the right time as controlled by the switches on
- * the driver station or the field controls.
- *
- * The VM is configured to automatically run this class, and to call the
- * functions corresponding to each mode, as described in the SampleRobot
- * documentation. If you change the name of this class or the package after
- * creating this project, you must also update the manifest file in the resource
- * directory.
- *
- * WARNING: While it may look like a good choice to use for your code if you're inexperienced,
- * don't. Unless you know what you are doing, complex code will be much more difficult under
- * this system. Use IterativeRobot or Command-Based instead if you're new.
+ * The entry class for the robot, handling autonomous, tele-op, and test mode.
+ * This class is built off the default Robot class
  * 
  * @author <a href="https://github.com/eandr127">eandr127</a>
  * @author <a href="https://github.com/JackMc">JackMc</a>
  */
 public class Robot extends SampleRobot {
+	/**
+	 * Whether to use regular tele-op or to log waypoints
+	 */
 	private static final boolean SAVE_WAYPOINTS = true;
 	
+	/**
+	 * Whether to run expirimental PID code or the working autonomous
+	 */
 	private static final boolean USE_PID = false;
 	
-    RobotDrive myRobot;
-    EJoystick stick;
+	/**
+	 * The RobotDrive to use to drive
+	 */
+    private RobotDrive myRobot;
     
-    final Talon motorA;
-    final Talon motorB;
+    /**
+     * The joystick to use
+     */
+    private EJoystick stick;
     
-    final Encoder encoderA;
-    final Encoder encoderB;
-
+    /**
+     * The first talon motor
+     */
+    private Talon motorA;
+    
+    /**
+     * The second talon motor
+     */
+    private Talon motorB;
+    
+    /**
+     * The encoder for the first motor
+     */
+    private Encoder encoderA;
+    
+    /**
+     * The encoder for the second motor
+     */
+    private Encoder encoderB;
+    
+    /**
+     * The SimPID to be used
+     */
     private SimPID sim;
     
+    /**
+     * This is the code first run when the robot code is started
+     */
     public Robot() {
     	
     	sim = new SimPID(0.08, 0.01, 0.3, 0.1);
@@ -91,7 +112,7 @@ public class Robot extends SampleRobot {
     }
 
     /**
-     * Drive left and right motors for 2 seconds then stop
+     * Either run preprogrammed file or call {@link #PIDTest() PIDTest()}
      */
     public void autonomous() {
     	Utils.ROBOT_LOGGER.log(INFO, "Autonomous");
@@ -119,6 +140,9 @@ public class Robot extends SampleRobot {
         myRobot.drive(0.0, 0.0);	// stop robot
     }
     
+    /**
+     * Test the SimPID
+     */
     private void PIDTest() {
     	sim.setErrorEpsilon(2);
     	sim.setDoneRange(3);
@@ -133,8 +157,7 @@ public class Robot extends SampleRobot {
     }
 
     /**
-     * Runs the motors with arcade steering.
-     * TODO: Log waypoints
+     * Runs the motors with arcade steering or log waypoints (TODO).
      */
     public void operatorControl() {
     	if(!SAVE_WAYPOINTS) {
