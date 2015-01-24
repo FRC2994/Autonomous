@@ -11,6 +11,7 @@ import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
+import com.google.common.base.Predicate;
 import com.google.common.base.Splitter;
 
 import edu.wpi.first.wpilibj.Encoder;
@@ -29,6 +30,15 @@ public class Utils {
 	 * A splitter to use when splitting strings by commas
 	 */
 	public static final Splitter SPLITTER = Splitter.on(',').trimResults().omitEmptyStrings();
+
+	/**
+	 * A filter to skip comments
+	 */
+	public static Predicate<String> skipComments = new Predicate<String>() {
+		public boolean apply(String str) {
+			return !str.startsWith("//");
+		}
+	};	
 	
 	/**
 	 * The location of the calibration file
@@ -171,5 +181,20 @@ public class Utils {
 		}
 		
     	drive.setLeftRightMotorOutputs(0, 0);
+	}
+	
+	public static void drivePID(SimPID sim, RobotDrive drive, Encoder encoderA, Encoder encoderB, int autoLoopCounter, int distance) {
+    	if(autoLoopCounter == 0) {
+    		sim.setDesiredValue(distance);
+    		encoderA.reset();
+    		encoderB.reset();
+    	}
+    	
+    	double driveVal = sim.calcPID((-encoderA.getDistance() - encoderB.getDistance()) / 2.0);
+    	double limitVal = SimPID.limitValue(driveVal, 0.25);
+    	
+    	drive.setLeftRightMotorOutputs(limitVal + 0.038, -limitVal);
+    	
+    	System.out.println("driveVal: " + driveVal + " limitVal: " + limitVal + " leftEncoder: " + encoderA.getDistance() + " rightEncoder: " + encoderB.getDistance());   
 	}
 }

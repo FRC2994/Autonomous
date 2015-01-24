@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.List;
 
 import com.google.common.base.Charsets;
-import com.google.common.collect.Lists;
+import com.google.common.collect.Iterables;
 import com.google.common.io.Files;
 
 import ca.team2994.frc.utils.Utils;
@@ -51,8 +51,11 @@ public class ParseFile {
 	public void start(File file) {
 		try {
 			List<String> guavaResult = Files.readLines(file, Charsets.UTF_8);
-			for(int i = 0; i < guavaResult.size(); i++) {
-				handleStateArray((String[]) Lists.newArrayList(Utils.SPLITTER.split(guavaResult.get(i))).toArray());
+			// Filter to only get those with one digit  *** Still No Copying Done! ***
+			Iterable<String> guavaResultFiltered = Iterables.filter(guavaResult, Utils.skipComments);
+			
+			for (String line: guavaResultFiltered) {
+				handleStateArray(Iterables.toArray(Utils.SPLITTER.split(line), String.class));
 			}
 		} catch (IOException e) {
 			Utils.logException(Utils.ROBOT_LOGGER, e);

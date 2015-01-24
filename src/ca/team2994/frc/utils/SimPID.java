@@ -166,15 +166,13 @@ public class SimPID {
         this.firstCycle = true;
     } 
     
-    private double limitValue(double val, double max) {
-    	if(val > max) {
-    		return max;
-    	}
-    	else if(val < -max) {
-    		return -max;
-    	}
-    	else {
-    		return val;
-    	}
+    public static double limitValue(double val, double max) {
+        if(val > max) {
+            return max;
+        } else if(val < -max) {
+            return -max;
+        } else {
+            return val;
+        }
     }
 }
