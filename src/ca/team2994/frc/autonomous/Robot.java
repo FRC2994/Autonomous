@@ -2,20 +2,21 @@
 package ca.team2994.frc.autonomous;
 
 
-import static java.util.logging.Level.INFO;
+import static java.util.logging.Level.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import com.google.common.base.Charsets;
-import com.google.common.collect.Lists;
-import com.google.common.io.Files;
-
 import ca.team2994.frc.utils.ButtonEntry;
 import ca.team2994.frc.utils.EJoystick;
 import ca.team2994.frc.utils.SimPID;
 import ca.team2994.frc.utils.Utils;
+
+import com.google.common.base.Charsets;
+import com.google.common.collect.Iterables;
+import com.google.common.io.Files;
+
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.SampleRobot;
@@ -30,6 +31,8 @@ import edu.wpi.first.wpilibj.Timer;
  * @author <a href="https://github.com/JackMc">JackMc</a>
  */
 public class Robot extends SampleRobot {
+	int autoLoopCounter;
+	
 	/**
 	 * Whether to use regular tele-op or to log waypoints
 	 */
@@ -38,7 +41,7 @@ public class Robot extends SampleRobot {
 	/**
 	 * Whether to run expirimental PID code or the working autonomous
 	 */
-	private static final boolean USE_PID = false;
+	private static final boolean USE_PID = true;
 	
 	/**
 	 * The RobotDrive to use to drive
@@ -73,20 +76,19 @@ public class Robot extends SampleRobot {
     /**
      * The SimPID to be used
      */
-    private SimPID sim;
-    
+	private SimPID sim;
+	
     /**
      * This is the code first run when the robot code is started
      */
-    public Robot() {
-    	
-    	sim = new SimPID(0.08, 0.01, 0.3, 0.1);
+	public void robotInit() {
+    	sim = new SimPID(2.16, 0.0, 0.0, 1 / 360);
     	
     	motorA = new Talon(0);
     	motorB = new Talon(1);
     	
-    	encoderA = new Encoder(0, 1, false);
-    	encoderB = new Encoder(2, 3, false);
+    	encoderA = new Encoder(0, 1, true);
+    	encoderB = new Encoder(2, 3, true);
     	
         myRobot = new RobotDrive(motorA, motorB);
         myRobot.setExpiration(0.1);
@@ -96,8 +98,14 @@ public class Robot extends SampleRobot {
 		Utils.ROBOT_LOGGER.log(INFO, "Constructer");
 		
 		try {
+			
 			List<String> guavaResult = Files.readLines(new File(Utils.CALIBRATION_OUTPUT_FILE_LOC), Charsets.UTF_8);
-			String[] s = ((String[]) Lists.newArrayList(Utils.SPLITTER.split(guavaResult.get(0))).toArray());
+			// Filter to only get those with one digit  *** Still No Copying Done! ***
+			Iterable<String> guavaResultFiltered = Iterables.filter(guavaResult, Utils.skipComments);
+			
+			String[] s = Iterables.toArray(Utils.SPLITTER.split(guavaResultFiltered.iterator().next()), String.class);
+			
+			
 			double encoderAConst = Double.parseDouble(s[0]);
 			double encoderBConst = Double.parseDouble(s[1]);
 				
@@ -109,7 +117,7 @@ public class Robot extends SampleRobot {
 			encoderA.setDistancePerPulse(1);
 			encoderB.setDistancePerPulse(1);
 		}
-    }
+	}
 
     /**
      * Either run preprogrammed file or call {@link #PIDTest() PIDTest()}
@@ -123,8 +131,11 @@ public class Robot extends SampleRobot {
     	
     	
     	
-    	if(USE_PID) 
-    		PIDTest();
+    	if(USE_PID) {
+    		while(!sim.isDone() && isEnabled()) {
+    			testPID();
+    		}
+    	}
     	else {
     		new ParseFile(new File(Utils.AUTONOMOUS_OUTPUT_FILE_LOC),
     			new Encoder[] {
@@ -139,23 +150,26 @@ public class Robot extends SampleRobot {
     	
         myRobot.drive(0.0, 0.0);	// stop robot
     }
-    
-    /**
-     * Test the SimPID
-     */
-    private void PIDTest() {
-    	sim.setErrorEpsilon(2);
-    	sim.setDoneRange(3);
-    	sim.setMaxOutput(0.5);
-    	sim.setMinDoneCycles(5);
+
+    private void testPID() {
+    	if(autoLoopCounter == 0) {
+    		sim.setDesiredValue(1.0);
+    		encoderA.reset();
+        	encoderB.reset();
+    	}
     	
-    	myRobot.drive(0.5, 0);
-    	sim.setDesiredValue(5);
-    	while(!sim.isDone()) {
-    		System.out.println(sim.calcPID((encoderA.getDistance() + encoderB.getDistance()) / 2));
+    	double driveVal = sim.calcPID((encoderA.getDistance() + encoderB.getDistance()) / 2.0);
+    	double limitVal = SimPID.limitValue(driveVal, 0.25);
+    	
+    	myRobot.setLeftRightMotorOutputs(limitVal + 0.0038, limitVal);
+    	autoLoopCounter++;
+    	
+    	System.out.println("isDone: " + sim.isDone() + " driveVal: " + driveVal + " limitVal: " + limitVal + " leftEncoder: " + encoderA.getDistance() + " rightEncoder: " + encoderB.getDistance());
+    	if(autoLoopCounter % 100 == 0) {
+    		Utils.ROBOT_LOGGER.log(INFO, ("isDone: " + sim.isDone() + " driveVal: " + driveVal + " limitVal: " + limitVal + " leftEncoder: " + encoderA.getDistance() + " rightEncoder: " + encoderB.getDistance()));
     	}
     }
-
+    
     /**
      * Runs the motors with arcade steering or log waypoints (TODO).
      */
@@ -191,7 +205,7 @@ public class Robot extends SampleRobot {
     		if(!isTest()) {
     			return;
     		}
-    		myRobot.arcadeDrive(stick); // drive with arcade style (use right stick)
+    		myRobot.arcadeDrive(-stick.getY(), -stick.getX()); // drive with arcade style (use right stick) (inverted) // drive with arcade style (use right stick)
     		i = stick.getEvent(2);
     	}
     	
