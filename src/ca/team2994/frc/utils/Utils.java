@@ -1,5 +1,7 @@
 package ca.team2994.frc.utils;
 
+import static java.util.logging.Level.INFO;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -165,36 +167,44 @@ public class Utils {
 	 * @param encoderB the second Encoder
 	 * @param drive The RobotDrive to use
 	 */
-	public static void setLeftRightMotorOutputsDistance(double speedA, double speedB, double aDistance, double bDistance, Encoder encoderA, Encoder encoderB, RobotDrive drive) {
+	public static void driveStraight(double speed, double distance, Encoder encoderA, Encoder encoderB, RobotDrive drive, SimPID sim) {
 		encoderA.reset();
 		encoderB.reset();
 
 		
-		if(aDistance < 0 || bDistance < 0) {
+		if(distance < 0) {
 			IllegalArgumentException e = new IllegalArgumentException("Distances must be positive"); 
 			logException(ROBOT_LOGGER, e);
 			throw e;
 		}
 		
-		while(((Math.abs(encoderA.getDistance()) < aDistance) || (Math.abs(encoderB.getDistance()) < bDistance)) && !drive.isSafetyEnabled()) {
-			drive.setLeftRightMotorOutputs(speedA, speedB);
-		}
-		
+		int autoLoopCounter = 0;
+		sim.calcPID((encoderA.getDistance() + encoderB.getDistance()) / 2.0);
+  		while(!sim.isDone() && !drive.isSafetyEnabled()) {
+  	    	if(autoLoopCounter == 0) {
+  	    		sim.setDesiredValue(1.0);
+  	    		encoderA.reset();
+  	        	encoderB.reset();
+  	    	}
+  	    	
+  	    	double driveVal = sim.calcPID((encoderA.getDistance() + encoderB.getDistance()) / 2.0);
+  	    	double limitVal = SimPID.limitValue(driveVal, 0.25);
+  	    	
+  	    	drive.setLeftRightMotorOutputs(limitVal + 0.0038, limitVal);
+  	    	autoLoopCounter++;
+  	    	
+  	    	System.out.println("isDone: " + sim.isDone() + " driveVal: " + driveVal + " limitVal: " + limitVal + " leftEncoder: " + encoderA.getDistance() + " rightEncoder: " + encoderB.getDistance());
+  	    	if(autoLoopCounter % 100 == 0) {
+  	    		Utils.ROBOT_LOGGER.log(INFO, ("isDone: " + sim.isDone() + " driveVal: " + driveVal + " limitVal: " + limitVal + " leftEncoder: " + encoderA.getDistance() + " rightEncoder: " + encoderB.getDistance()));
+  	    	}
+  		}
+    	sim.resetErrorSum();
+    	sim.resetPreviousVal();
+    	
+    	
+    	encoderA.reset();
+    	encoderB.reset();
+    	
     	drive.setLeftRightMotorOutputs(0, 0);
-	}
-	
-	public static void drivePID(SimPID sim, RobotDrive drive, Encoder encoderA, Encoder encoderB, int autoLoopCounter, int distance) {
-    	if(autoLoopCounter == 0) {
-    		sim.setDesiredValue(distance);
-    		encoderA.reset();
-    		encoderB.reset();
-    	}
-    	
-    	double driveVal = sim.calcPID((-encoderA.getDistance() - encoderB.getDistance()) / 2.0);
-    	double limitVal = SimPID.limitValue(driveVal, 0.25);
-    	
-    	drive.setLeftRightMotorOutputs(limitVal + 0.038, -limitVal);
-    	
-    	System.out.println("driveVal: " + driveVal + " limitVal: " + limitVal + " leftEncoder: " + encoderA.getDistance() + " rightEncoder: " + encoderB.getDistance());   
 	}
 }

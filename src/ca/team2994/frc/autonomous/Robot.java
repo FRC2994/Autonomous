@@ -82,7 +82,7 @@ public class Robot extends SampleRobot {
      * This is the code first run when the robot code is started
      */
 	public void robotInit() {
-    	sim = new SimPID(2.16, 0.0, 0.0, 1 / 360);
+    	sim = new SimPID(2.16, 0.0, 0.0, 0.1);
     	
     	motorA = new Talon(0);
     	motorB = new Talon(1);
@@ -132,9 +132,7 @@ public class Robot extends SampleRobot {
     	
     	
     	if(USE_PID) {
-    		while(!sim.isDone() && isEnabled()) {
-    			testPID();
-    		}
+    		Utils.driveStraight(0.25, 1.0, encoderA, encoderB, myRobot, sim);
     	}
     	else {
     		new ParseFile(new File(Utils.AUTONOMOUS_OUTPUT_FILE_LOC),
@@ -144,9 +142,6 @@ public class Robot extends SampleRobot {
     			}, 
     			myRobot);
     	}
-    		
-    	encoderA.reset();
-    	encoderB.reset();
     	
         myRobot.drive(0.0, 0.0);	// stop robot
     }
