@@ -2,7 +2,7 @@
 package ca.team2994.frc.autonomous;
 
 
-import static java.util.logging.Level.*;
+import static java.util.logging.Level.INFO;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,6 +10,8 @@ import java.util.List;
 
 import ca.team2994.frc.utils.ButtonEntry;
 import ca.team2994.frc.utils.EJoystick;
+import ca.team2994.frc.utils.SimGyro;
+import ca.team2994.frc.utils.SimLib;
 import ca.team2994.frc.utils.SimPID;
 import ca.team2994.frc.utils.Utils;
 
@@ -17,6 +19,7 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.Iterables;
 import com.google.common.io.Files;
 
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.SampleRobot;
@@ -76,13 +79,23 @@ public class Robot extends SampleRobot {
     /**
      * The SimPID to be used
      */
-	private SimPID sim;
+	private SimPID encoderPID;
+	
+	private SimPID gyroPID;
+	
+	private SimGyro gyro;
+	
+	
 	
     /**
      * This is the code first run when the robot code is started
      */
 	public void robotInit() {
-    	sim = new SimPID(2.16, 0.0, 0.0, 1 / 360);
+		Utils.configureRobotLogger();
+		Utils.ROBOT_LOGGER.log(INFO, "Robo-Init");
+		
+    	encoderPID = new SimPID(2.16, 0.0, 0.0, 0.1);
+    	
     	
     	motorA = new Talon(0);
     	motorB = new Talon(1);
@@ -93,9 +106,6 @@ public class Robot extends SampleRobot {
         myRobot = new RobotDrive(motorA, motorB);
         myRobot.setExpiration(0.1);
         stick = new EJoystick(0);
-        
-		Utils.configureRobotLogger();
-		Utils.ROBOT_LOGGER.log(INFO, "Constructer");
 		
 		try {
 			
@@ -119,22 +129,26 @@ public class Robot extends SampleRobot {
 		}
 	}
 
+	public Robot() {
+        gyro = new SimGyro(new AnalogInput(1), 0);       
+        gyro.initGyro(); //Put in constructer because so there isn't any delay the start of readings from gyro
+	}
+	
     /**
      * Either run preprogrammed file or call {@link #PIDTest() PIDTest()}
      */
     public void autonomous() {
-    	Utils.ROBOT_LOGGER.log(INFO, "Autonomous");
-    	myRobot.setSafetyEnabled(false);
+    	Utils.ROBOT_LOGGER.log(INFO, "Autonomous");  	
+    	
+    	myRobot.setSafetyEnabled(true);
     	
     	encoderA.reset();
     	encoderB.reset();
     	
-    	
+    	gyroPID = new SimPID(2.16, 0.0, 0.1, 1.0);
     	
     	if(USE_PID) {
-    		while(!sim.isDone() && isEnabled()) {
-    			testPID();
-    		}
+    		Utils.turn(gyro, myRobot, gyroPID, 90, 0.25);
     	}
     	else {
     		new ParseFile(new File(Utils.AUTONOMOUS_OUTPUT_FILE_LOC),
@@ -144,29 +158,27 @@ public class Robot extends SampleRobot {
     			}, 
     			myRobot);
     	}
-    		
-    	encoderA.reset();
-    	encoderB.reset();
     	
         myRobot.drive(0.0, 0.0);	// stop robot
     }
 
-    private void testPID() {
+    @SuppressWarnings("unused")
+	private void testPID() {
     	if(autoLoopCounter == 0) {
-    		sim.setDesiredValue(1.0);
+    		encoderPID.setDesiredValue(1.0);
     		encoderA.reset();
         	encoderB.reset();
     	}
     	
-    	double driveVal = sim.calcPID((encoderA.getDistance() + encoderB.getDistance()) / 2.0);
-    	double limitVal = SimPID.limitValue(driveVal, 0.25);
+    	double driveVal = encoderPID.calcPID((encoderA.getDistance() + encoderB.getDistance()) / 2.0);
+    	double limitVal = SimLib.limitValue(driveVal, 0.25);
     	
     	myRobot.setLeftRightMotorOutputs(limitVal + 0.0038, limitVal);
     	autoLoopCounter++;
     	
-    	System.out.println("isDone: " + sim.isDone() + " driveVal: " + driveVal + " limitVal: " + limitVal + " leftEncoder: " + encoderA.getDistance() + " rightEncoder: " + encoderB.getDistance());
+    	System.out.println("isDone: " + encoderPID.isDone() + " driveVal: " + driveVal + " limitVal: " + limitVal + " leftEncoder: " + encoderA.getDistance() + " rightEncoder: " + encoderB.getDistance());
     	if(autoLoopCounter % 100 == 0) {
-    		Utils.ROBOT_LOGGER.log(INFO, ("isDone: " + sim.isDone() + " driveVal: " + driveVal + " limitVal: " + limitVal + " leftEncoder: " + encoderA.getDistance() + " rightEncoder: " + encoderB.getDistance()));
+    		Utils.ROBOT_LOGGER.log(INFO, ("isDone: " + encoderPID.isDone() + " driveVal: " + driveVal + " limitVal: " + limitVal + " leftEncoder: " + encoderA.getDistance() + " rightEncoder: " + encoderB.getDistance()));
     	}
     }
     

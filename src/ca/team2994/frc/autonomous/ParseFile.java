@@ -33,7 +33,7 @@ public class ParseFile {
 	
 
 	/**
-	 * Assigns {@code e} to {@code encoders} then passes on to {@link #start(File) start(java.io.File file)}
+	 * Assigns {@code e} to {@code encoders} then passes on to {@link #start(File) start(java.io.File file)} Note: Currently does not work
 	 * @param file The file to be parsed
 	 * @param e The Encoders to use
 	 * @param drive The RobotDrive to drive with
@@ -96,8 +96,8 @@ public class ParseFile {
 			i++;
 		}
 		
-		Utils.setLeftRightMotorOutputsDistance(speedA, speedB, encoderADistance, encoderBDistance,
-				encoders[0], encoders[1], drive);
+		//Utils.setLeftRightMotorOutputsDistance(speedA, speedB, encoderADistance, encoderBDistance,
+				//encoders[0], encoders[1], drive);
 	}
 
 
