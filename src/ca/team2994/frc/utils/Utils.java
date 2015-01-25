@@ -172,23 +172,23 @@ public class Utils {
 		encoderB.reset();
 
 		
-		if(distance < 0) {
+		/*if(distance < 0) {
 			IllegalArgumentException e = new IllegalArgumentException("Distances must be positive"); 
 			logException(ROBOT_LOGGER, e);
 			throw e;
-		}
+		}*/
 		
 		int autoLoopCounter = 0;
 		sim.calcPID((encoderA.getDistance() + encoderB.getDistance()) / 2.0);
   		while(!sim.isDone() && !drive.isSafetyEnabled()) {
   	    	if(autoLoopCounter == 0) {
-  	    		sim.setDesiredValue(1.0);
+  	    		sim.setDesiredValue(distance);
   	    		encoderA.reset();
   	        	encoderB.reset();
   	    	}
   	    	
   	    	double driveVal = sim.calcPID((encoderA.getDistance() + encoderB.getDistance()) / 2.0);
-  	    	double limitVal = SimPID.limitValue(driveVal, 0.25);
+  	    	double limitVal = SimLib.limitValue(driveVal, 0.25);
   	    	
   	    	drive.setLeftRightMotorOutputs(limitVal + 0.0038, limitVal);
   	    	autoLoopCounter++;
@@ -206,5 +206,38 @@ public class Utils {
     	encoderB.reset();
     	
     	drive.setLeftRightMotorOutputs(0, 0);
+	}
+	
+	public static void turn(SimGyro gyro, RobotDrive drive, SimPID gyroPID, int degrees, double max) {
+		
+  		gyroPID.setDesiredValue(degrees);
+  		gyro.reset(0);
+		int autoLoopCounter = 0;
+		gyroPID.calcPID(gyro.getAngle());
+		System.out.println("isDone: " + gyroPID.isDone() + " gyro: " + gyro.getAngle());
+		while(!gyroPID.isDone() && drive.isSafetyEnabled()) {
+  	    	if(autoLoopCounter == 0) {
+  	    		gyroPID.setDesiredValue(degrees);
+  	    		gyro.reset(0);
+  	    	}
+			
+			double driveVal = gyroPID.calcPID(gyro.getAngle());
+  	    	double limitVal = SimLib.limitValue(driveVal, max);
+  	    	
+  	    	if(degrees < 0) {
+  	    		drive.setLeftRightMotorOutputs(limitVal, -limitVal);
+  	    	}
+  	    	else {
+  	    		drive.setLeftRightMotorOutputs(-limitVal, limitVal);
+  	    	}
+  	    	autoLoopCounter++;
+  	    	
+  	    	System.out.println("isDone: " + gyroPID.isDone() + " driveVal: " + driveVal + " limitVal: " + limitVal + " gyro: " + gyro.getAngle());
+  	    	
+  	    	if(autoLoopCounter % 100 == 0) {
+  	    		Utils.ROBOT_LOGGER.log(INFO, ("isDone: " + gyroPID.isDone() + " driveVal: " + driveVal + " limitVal: " + limitVal + " gyro: " + gyro.getAngle()));
+  	    	}
+		}
+		drive.drive(0.0, 0.0);
 	}
 }

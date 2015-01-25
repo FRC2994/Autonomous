@@ -139,7 +139,7 @@ public class SimPID {
         double output = pVal + iVal - dVal;
         
         //limit the output
-        output = limitValue(output, this.maxOutput);
+        output = SimLib.limitValue(output, this.maxOutput);
         
         //store current value as previous for next cycle
         this.previousVal = currentVal;
@@ -165,14 +165,4 @@ public class SimPID {
     public void resetPreviousVal() {
         this.firstCycle = true;
     } 
-    
-    public static double limitValue(double val, double max) {
-        if(val > max) {
-            return max;
-        } else if(val < -max) {
-            return -max;
-        } else {
-            return val;
-        }
-    }
 }
