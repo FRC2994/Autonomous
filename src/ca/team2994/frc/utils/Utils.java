@@ -209,7 +209,6 @@ public class Utils {
 	}
 	
 	public static void turn(SimGyro gyro, RobotDrive drive, SimPID gyroPID, int degrees, double max) {
-		
   		gyroPID.setDesiredValue(degrees);
   		gyro.reset(0);
 		int autoLoopCounter = 0;
