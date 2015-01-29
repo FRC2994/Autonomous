@@ -86,6 +86,10 @@ public class DriveManagerImpl implements DriveManager {
 		this.calibration = new CalibrationManager(stick, drive, base);
 	}
 	
+	/**
+	 * Read in the encoder values from the autonomous config file.
+	 * TODO: Integrate this with Georges' Constants class.
+	 */
 	private void readEncoderValues() {
 		try {
 

@@ -49,6 +49,8 @@ public class Robot extends SampleRobot {
 	private EJoystick stick;
 	
 	DriveManager driveManager;
+	// TODO: Implement mode-switching functionality
+	AutoMode currentMode;
 	
 	
 	
@@ -63,6 +65,13 @@ public class Robot extends SampleRobot {
 		
 		driveManager = new DriveManagerImpl(new RobotDrive(0, 1), this, new SimGyro(new AnalogInput(1), 0),
 				new Encoder(0, 1, true), new Encoder(2, 3, true), stick);
+		
+		try {
+			currentMode = new AutoMode("Drive straight and turn", "straightturn.waypoints", driveManager);
+		} catch (IOException e) {
+			Utils.logException(Utils.ROBOT_LOGGER, e);
+			e.printStackTrace();
+		}
 	}
 
 	public Robot() {
