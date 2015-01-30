@@ -35,7 +35,7 @@ public class Robot extends SampleRobot {
 	// TODO: Implement mode-switching functionality
 	AutoMode currentMode;
 	
-	
+	private SimGyro gyro;
 	
     /**
      * This is the code first run when the robot code is started
@@ -46,11 +46,16 @@ public class Robot extends SampleRobot {
 		
 		stick = new EJoystick(0);
 		
-		driveManager = new DriveManagerImpl(new RobotDrive(0, 1), this, new SimGyro(new AnalogInput(1), 0),
+		driveManager = new DriveManagerImpl(new RobotDrive(0, 1), this, gyro,
 				new Encoder(0, 1, true), new Encoder(2, 3, true), stick);
 	}
 
+	/**
+	 * Initialize gyro before robot code says that it is ready
+	 */
 	public Robot() {
+		gyro = new SimGyro(new AnalogInput(1), 0);
+		gyro.initGyro();
 	}
 	
     /**
