@@ -6,7 +6,11 @@ public class TurnWaypoint implements Waypoint {
 	public TurnWaypoint(int angle) {
 		this.angle = angle;
 	}
-
+	
+	/**
+	 * {@inheritDoc}
+	 * Turn robot
+	 */
 	@Override
 	public void execute(DriveManager drive) {
 		// Turn angle degrees

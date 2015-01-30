@@ -31,7 +31,14 @@ public interface DriveManager {
 	 */
 	public void runCalibration();
 	
+	
+	/**
+	 * Reads PID values from file and sets them
+	 */
 	public void readPIDValues();
 	
+	/**
+	 * Called at the beginning of autonomous
+	 */
 	public void runAutonomous();
 }

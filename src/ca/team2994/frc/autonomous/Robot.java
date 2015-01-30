@@ -29,12 +29,6 @@ public class Robot extends SampleRobot {
 	 */
 	private static final boolean SAVE_WAYPOINTS = true;
 	
-	/**
-	 * Whether to run expirimental PID code or the working autonomous
-	 */
-	@SuppressWarnings("unused")
-	private static final boolean USE_PID = true;
-	
 	private EJoystick stick;
 	
 	public static DriveManager driveManager;
@@ -60,7 +54,7 @@ public class Robot extends SampleRobot {
 	}
 	
     /**
-     * Either run preprogrammed file or call {@link #PIDTest() PIDTest()}
+     * Initialize PID values for the gyro, then call {@link DriveManager#runAutonomous() runAutonomous()}
      */
     public void autonomous() {
     	driveManager.readPIDValues();

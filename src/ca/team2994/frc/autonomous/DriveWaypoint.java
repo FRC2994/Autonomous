@@ -7,6 +7,10 @@ public class DriveWaypoint implements Waypoint {
 		this.distance = distance;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * Drive forward
+	 */
 	@Override
 	public void execute(DriveManager drive) {
 		// Turn angle degrees

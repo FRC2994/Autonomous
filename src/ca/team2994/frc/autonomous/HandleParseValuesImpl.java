@@ -6,6 +6,10 @@ import ca.team2994.frc.utils.Utils;
 
 public class HandleParseValuesImpl implements HandleParseValues {
 
+	/**
+	 * {@inheritDoc}
+	 * This implementation assigns the values of the gyroAngle and the encoderDistance
+	 */
 	@Override
 	public void HandleAutonValues(double[] vals) {
 		double encoderDistance = 0.0;		//Distance to drive robot forward

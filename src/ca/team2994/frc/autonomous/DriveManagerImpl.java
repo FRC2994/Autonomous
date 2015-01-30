@@ -63,6 +63,8 @@ public class DriveManagerImpl implements DriveManager {
 	 * 						(right) encoder to be assumed as the only one.
 	 * @param rightEncoder The encoder on the "right" side of the robot. Passing this in as null will cause the other 
 	 * 						(left) encoder to be assumed as the only one.
+	 * 
+	 * @param stick The joystick to take user input with
 	 */
 	public DriveManagerImpl(RobotDrive drive, RobotBase base, 
 							SimGyro gyro, Encoder leftEncoder, 
@@ -118,6 +120,9 @@ public class DriveManagerImpl implements DriveManager {
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see ca.team2994.frc.autonomous.DriveManager#readPIDValues()
+	 */
 	public void readPIDValues() {
 		try {
 
@@ -202,15 +207,24 @@ public class DriveManagerImpl implements DriveManager {
 		drive.drive(0.0, 0.0);
 	}
 	
+	/* (non-Javadoc)
+	 * @see ca.team2994.frc.autonomous.DriveManager#arcadeDrive()
+	 */
 	public void arcadeDrive() {
 		//TODO: Change this for competition robot??
 		drive.arcadeDrive(-stick.getY(), -stick.getX()); // drive with arcade style (use right stick) (inverted)
 	}
 	
+	/* (non-Javadoc)
+	 * @see ca.team2994.frc.autonomous.DriveManager#runCalibration()
+	 */
 	public void runCalibration() {
 		calibration.calibrateEncoders(leftEncoder, rightEncoder, stick);
 	}
 	
+	/* (non-Javadoc)
+	 * @see ca.team2994.frc.autonomous.DriveManager#runAutonomous
+	 */
 	public void runAutonomous() {
 		new ParseFile(new File(Utils.AUTONOMOUS_OUTPUT_FILE_LOC), new Encoder[] {
 			leftEncoder,
