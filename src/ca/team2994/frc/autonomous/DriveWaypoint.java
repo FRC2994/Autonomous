@@ -1,9 +1,9 @@
 package ca.team2994.frc.autonomous;
 
 public class DriveWaypoint implements Waypoint {
-	private int distance;
+	private double distance;
 	
-	public DriveWaypoint(int distance) {
+	public DriveWaypoint(double distance) {
 		this.distance = distance;
 	}
 

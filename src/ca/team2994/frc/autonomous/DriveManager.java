@@ -7,7 +7,7 @@ public interface DriveManager {
 	 * calibrated to.
 	 * @param units Number of units to drive forward. Determined by calibration.
 	 */
-	public abstract void driveStraight(int units);
+	public abstract void driveStraight(double units);
 
 	/**
 	 * Turns degrees degrees to the left when degrees is negative and to the right
@@ -30,4 +30,8 @@ public interface DriveManager {
 	 * Runs a calibration routine to set the encoder distance per pulse. 
 	 */
 	public void runCalibration();
+	
+	public void readPIDValues();
+	
+	public void runAutonomous();
 }

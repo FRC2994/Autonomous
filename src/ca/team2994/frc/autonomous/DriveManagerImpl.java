@@ -28,6 +28,11 @@ public class DriveManagerImpl implements DriveManager {
 	private SimPID encoderPID;
 	private SimPID gyroPID;
 	
+	double gyroP;
+	double gyroI;
+	double gyroD;
+	double gyroE;
+	
 	// Sensors
 	private SimGyro gyro;
 	private Encoder rightEncoder;
@@ -71,14 +76,14 @@ public class DriveManagerImpl implements DriveManager {
 		
 		// Initialize the gyro (takes 1.0 seconds cause of a wait in the code,
 		// can we fix this?)
+		//gyro.setSensitivity(Double.POSITIVE_INFINITY);
 		gyro.initGyro();
 		
 		// Read encoder values from a file.
 		readEncoderValues();
-		
+		readPIDValues();
 		// TODO: Read these in from the Constants file or the SmartDashboard
 		// Rationale: The D stops it from thrasing, P is taken from Simbotics
-		this.gyroPID = new SimPID(2.16, 0.0, 0.1, 1.0);
 		// Rationale: P is taken from Simbotics.
 		this.encoderPID = new SimPID(2.16, 0.0, 0.0, 0.1);
 		
@@ -113,11 +118,33 @@ public class DriveManagerImpl implements DriveManager {
 		}
 	}
 	
+	public void readPIDValues() {
+		try {
+
+			List<String> guavaResult = Files.readLines(new File("/home/lvuser/gyroPID.txt"), Charsets.UTF_8);
+			Iterable<String> guavaResultFiltered = Iterables.filter(guavaResult, Utils.skipComments);
+
+			String[] s = Iterables.toArray(Utils.SPLITTER.split(guavaResultFiltered.iterator().next()), String.class);
+
+
+			gyroP = Double.parseDouble(s[0]);
+			gyroI = Double.parseDouble(s[1]);
+			gyroD = Double.parseDouble(s[2]);
+			gyroE = Double.parseDouble(s[3]);
+			
+			this.gyroPID = new SimPID(gyroP, gyroI, gyroD, gyroE);
+			
+		} catch (IOException e) {
+			Utils.logException(Utils.ROBOT_LOGGER, e);
+		}
+	}
+	
+	
 	/* (non-Javadoc)
 	 * @see ca.team2994.frc.autonomous.DriveManager#driveStraight(int)
 	 */
 	@Override
-	public void driveStraight(int units) {
+	public void driveStraight(double units) {
 		// Reset the encoders (encoder.get(Distance|)() == 0)
 		leftEncoder.reset();
 		rightEncoder.reset();
@@ -162,16 +189,12 @@ public class DriveManagerImpl implements DriveManager {
 		gyroPID.calcPID(0);
 
 		while(!gyroPID.isDone() && robot.isEnabled() && robot.isAutonomous()) {
-			double driveVal = gyroPID.calcPID(gyro.getAngle());
+			System.out.println("gyro.getAngle() = " + gyro.getAngle());
+			double driveVal = gyroPID.calcPID(-gyro.getAngle());
 			// TODO: Read this from the constants file as "gyroPIDMax"
-  	    	double limitVal = SimLib.limitValue(driveVal, 0.5);
-  	    	
-  	    	if(degrees < 0) {
-  	    		drive.setLeftRightMotorOutputs(limitVal, -limitVal);
-  	    	}
-  	    	else {
-  	    		drive.setLeftRightMotorOutputs(-limitVal, limitVal);
-  	    	}
+  	    	double limitVal = SimLib.limitValue(driveVal, 0.25);
+  	    	System.out.println("limitVal = " + limitVal);
+  	    	drive.setLeftRightMotorOutputs(limitVal, -limitVal);
 		}
 		
   		// Reset the motors (safety and sanity for if we bail out on a none-isDone() 
@@ -186,5 +209,12 @@ public class DriveManagerImpl implements DriveManager {
 	
 	public void runCalibration() {
 		calibration.calibrateEncoders(leftEncoder, rightEncoder, stick);
+	}
+	
+	public void runAutonomous() {
+		new ParseFile(new File(Utils.AUTONOMOUS_OUTPUT_FILE_LOC), new Encoder[] {
+			leftEncoder,
+			rightEncoder
+		}, drive);
 	}
 }

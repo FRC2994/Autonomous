@@ -24,11 +24,13 @@ public class ParseFile {
 	/**
 	 * The robot drive to move the robot with
 	 */
+	@SuppressWarnings("unused")
 	private final RobotDrive drive;
 	
 	/**
 	 * The shaft encoders on the robot
 	 */
+	@SuppressWarnings("unused")
 	private final Encoder[] encoders;
 	
 
@@ -51,7 +53,6 @@ public class ParseFile {
 	public void start(File file) {
 		try {
 			List<String> guavaResult = Files.readLines(file, Charsets.UTF_8);
-			// Filter to only get those with one digit  *** Still No Copying Done! ***
 			Iterable<String> guavaResultFiltered = Iterables.filter(guavaResult, Utils.skipComments);
 			
 			for (String line: guavaResultFiltered) {
@@ -67,37 +68,17 @@ public class ParseFile {
 	 * @param args The array of Strings to be used
 	 */
 	private void handleStateArray(String[] args) {
-		double encoderADistance = 0;
-		double encoderBDistance = 0;
-		double speedA = 0;
-		double speedB = 0;
 		
-		int i = 0;
+		double[] doubleVals = new double[args.length]; //Initialize to size of args
+		
+		int i = 0; //counter to convert array
 		for(String s : args) {
-			double val = Double.parseDouble(s);
-			
-			switch(i) {
-				case 0:
-					encoderADistance = val;
-					break;
-				case 1:
-					encoderBDistance = val;
-					break;
-				case 2:
-					speedA = val;
-					break;
-				case 3:
-					speedB = val;
-					break;
-				default:
-					Utils.ROBOT_LOGGER.severe("Error!");
-					break;
-			}
+			double val = Double.parseDouble(s); //Convert s to double
+			doubleVals[i] = val; 				//Add it to array
 			i++;
 		}
-		
-		//Utils.setLeftRightMotorOutputsDistance(speedA, speedB, encoderADistance, encoderBDistance,
-				//encoders[0], encoders[1], drive);
+		HandleParseValues handleParseValues = new HandleParseValuesImpl(); 	//Make new object to call method from 
+		handleParseValues.HandleAutonValues(doubleVals);					//Pass on values
 	}
 
 

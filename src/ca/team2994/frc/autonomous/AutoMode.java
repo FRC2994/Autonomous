@@ -13,8 +13,10 @@ import com.google.common.collect.Iterables;
 import com.google.common.io.Files;
 
 public class AutoMode {
+	@SuppressWarnings("unused")
 	private DriveManager drive;
 	private String filename;
+	@SuppressWarnings("unused")
 	private String name;
 	private List<Waypoint> waypoints;
 	
