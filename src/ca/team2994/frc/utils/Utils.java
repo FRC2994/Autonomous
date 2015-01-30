@@ -149,6 +149,11 @@ public class Utils {
     	drive.drive(0, 0);
 	}	
 	
+	/**
+	 * Logs exception stack-traces
+	 * @param log The Java Logger to log with
+	 * @param e The exception to log
+	 */
 	public static void logException(Logger log, Exception e) {
 		StringWriter errors = new StringWriter();
 		e.printStackTrace(new PrintWriter(errors));
@@ -157,27 +162,19 @@ public class Utils {
 		log.severe(exception);
 	}
 	
-	/**
+	/** @deprecated by {@link ca.team2994.frc.autonomous.DriveWaypoint DriveWaypoint}<br>
 	 * Drive until a distance is reached
-	 * @param speedA The speed to drive at
-	 * @param speedB How much to turn
-	 * @param aDistance How far to drive on the first motor
-	 * @param bDistance How much to drive on the second motor
+	 * @param speed The speed to drive at
+	 * @param distance How far to drive
 	 * @param encoderA The first Encoder
 	 * @param encoderB the second Encoder
 	 * @param drive The RobotDrive to use
+	 * @param sim The SimPID to use
 	 */
 	public static void driveStraight(double speed, double distance, Encoder encoderA, Encoder encoderB, RobotDrive drive, SimPID sim) {
 		encoderA.reset();
 		encoderB.reset();
 
-		
-		/*if(distance < 0) {
-			IllegalArgumentException e = new IllegalArgumentException("Distances must be positive"); 
-			logException(ROBOT_LOGGER, e);
-			throw e;
-		}*/
-		
 		int autoLoopCounter = 0;
 		sim.calcPID((encoderA.getDistance() + encoderB.getDistance()) / 2.0);
   		while(!sim.isDone() && !drive.isSafetyEnabled()) {
@@ -208,6 +205,14 @@ public class Utils {
     	drive.setLeftRightMotorOutputs(0, 0);
 	}
 	
+	/** @deprecated by {@link ca.team2994.frc.autonomous.TurnWaypoint TurnWaypoint}<br>
+	 * Turn the robot until specified degrees
+	 * @param gyro The gyro to measure turn angle
+	 * @param drive The RobotDrive to drive with
+	 * @param gyroPID The SimPID to use
+	 * @param degrees The angle to turn
+	 * @param max The maximum speed to drive at
+	 */
 	public static void turn(SimGyro gyro, RobotDrive drive, SimPID gyroPID, int degrees, double max) {
   		gyroPID.setDesiredValue(degrees);
   		gyro.reset(0);

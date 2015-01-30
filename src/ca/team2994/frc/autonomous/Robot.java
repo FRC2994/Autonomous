@@ -29,19 +29,13 @@ public class Robot extends SampleRobot {
 	 */
 	private static final boolean SAVE_WAYPOINTS = true;
 	
-	/**
-	 * Whether to run expirimental PID code or the working autonomous
-	 */
-	@SuppressWarnings("unused")
-	private static final boolean USE_PID = true;
-	
 	private EJoystick stick;
 	
 	public static DriveManager driveManager;
 	// TODO: Implement mode-switching functionality
 	AutoMode currentMode;
 	
-	
+	private SimGyro gyro;
 	
     /**
      * This is the code first run when the robot code is started
@@ -52,15 +46,20 @@ public class Robot extends SampleRobot {
 		
 		stick = new EJoystick(0);
 		
-		driveManager = new DriveManagerImpl(new RobotDrive(0, 1), this, new SimGyro(new AnalogInput(1), 0),
+		driveManager = new DriveManagerImpl(new RobotDrive(0, 1), this, gyro,
 				new Encoder(0, 1, true), new Encoder(2, 3, true), stick);
 	}
 
+	/**
+	 * Initialize gyro before robot code says that it is ready
+	 */
 	public Robot() {
+		gyro = new SimGyro(new AnalogInput(1), 0);
+		gyro.initGyro();
 	}
 	
     /**
-     * Either run preprogrammed file or call {@link #PIDTest() PIDTest()}
+     * Initialize PID values for the gyro, then call {@link DriveManager#runAutonomous() runAutonomous()}
      */
     public void autonomous() {
     	driveManager.readPIDValues();
