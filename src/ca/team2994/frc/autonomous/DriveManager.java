@@ -41,4 +41,11 @@ public interface DriveManager {
 	 * Called at the beginning of autonomous
 	 */
 	public void runAutonomous();
+	
+	/**
+	 * 
+	 */
+	public void runTeleOPLogging();
+	
+	public void resetMeasurements();
 }

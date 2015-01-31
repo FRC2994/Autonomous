@@ -8,6 +8,7 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.Iterables;
 import com.google.common.io.Files;
 
+import ca.team2994.frc.utils.ButtonEntry;
 import ca.team2994.frc.utils.EJoystick;
 import ca.team2994.frc.utils.SimGyro;
 import ca.team2994.frc.utils.SimLib;
@@ -79,7 +80,7 @@ public class DriveManagerImpl implements DriveManager {
 		// Initialize the gyro (takes 1.0 seconds cause of a wait in the code,
 		// can we fix this?)
 		//gyro.setSensitivity(Double.POSITIVE_INFINITY);
-		gyro.initGyro();
+		//gyro.initGyro();
 		
 		// Read encoder values from a file.
 		readEncoderValues();
@@ -230,5 +231,61 @@ public class DriveManagerImpl implements DriveManager {
 			leftEncoder,
 			rightEncoder
 		}, drive);
+	}
+
+	
+	
+	/* (non-Javadoc)
+	 * @see ca.team2994.frc.autonomous.DriveManager#runTeleOpLogging
+	 */
+	public void runTeleOPLogging() {
+		while(robot.isOperatorControl()) {
+			doLogging();
+		}
+    	drive.drive(0, 0);
+	}
+
+	
+	private void doLogging() {
+		resetMeasurements();
+		
+		stick.enableButton(1);
+    	//boolean wasLastTurn = false;
+    	int i = 0;
+    	while(i != ButtonEntry.EVENT_CLOSED) {
+    		stick.update();
+    		if(!robot.isOperatorControl()) {
+    			return;
+    		}
+    		/*if((leftEncoder.getDistance() < 0 && rightEncoder.getDistance() > 0) || (
+    				leftEncoder.getDistance() > 0 && rightEncoder.getDistance() < 0)) {
+    			wasLastTurn = true;
+    		}
+    		else if(wasLastTurn) {
+    			leftEncoder.reset();
+    			rightEncoder.reset();
+    		}
+    		*/
+    		drive.arcadeDrive(-stick.getY(), -stick.getX()); // drive with arcade style (use right stick) (inverted) // drive with arcade style (use right stick)
+    		i = stick.getEvent(1);
+    	}
+    	
+    	double encoderVal = (leftEncoder.getDistance() + rightEncoder.getDistance()) / 2;
+    	
+    	Utils.addLine(new double[] {
+    			gyro.getAngle(),
+    			encoderVal
+    	});
+    	
+    	resetMeasurements();
+	}
+	
+	/* (non-Javadoc)
+	 * @see ca.team2994.frc.autonomous.DriveManager#resetMeasurments()
+	 */
+	public void resetMeasurements() {
+		leftEncoder.reset();
+		rightEncoder.reset();
+		gyro.reset(0);
 	}
 }
