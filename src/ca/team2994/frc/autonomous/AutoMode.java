@@ -3,6 +3,8 @@ package ca.team2994.frc.autonomous;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -13,12 +15,13 @@ import com.google.common.collect.Iterables;
 import com.google.common.io.Files;
 
 public class AutoMode {
-	@SuppressWarnings("unused")
 	private DriveManager drive;
 	private String filename;
 	@SuppressWarnings("unused")
 	private String name;
 	private List<Waypoint> waypoints;
+	
+	public final long startTime = System.currentTimeMillis();
 	
 	/**
 	 * Initialize a AutoMode object and read from the autonomous waypoints file
@@ -46,7 +49,6 @@ public class AutoMode {
 		// TODO: Read from the autonomous waypoints file (filename)
 		// Magic Guava splitting/reading voodoo
 		List<String> guavaResult = Files.readLines(new File(filename), Charsets.UTF_8);
-		// Filter to only get those with one digit  *** Still No Copying Done! ***
 		Iterable<String> guavaResultFiltered = Iterables.filter(guavaResult, 
 				Utils.skipComments);
 		guavaResultFiltered.forEach(new Consumer<String>() {
@@ -55,15 +57,16 @@ public class AutoMode {
 				String[] s = Iterables.toArray(Utils.SPLITTER.split(line), String.class);
 				/*
 				 * s should now contain:
-				 * 1) The type of action (turn or drive)
-				 * 2) The associated values
+				 * 1) The time  since the start of autonomous
+				 * 2) The type of action (turn or drive)
+				 * 3) The parameters for the action
 				 */
-				String type = s[0];
+				String type = s[1];
 				
 				if (type.equalsIgnoreCase("turn")) {
 					try {
-						Integer angle = Integer.parseInt(s[1]);
-						waypoints.add(new TurnWaypoint(angle));
+						int angle =(int)Double.parseDouble(s[2]);
+						waypoints.add(new TurnWaypoint(angle, Integer.parseInt(s[0]), drive));
 					} catch (NumberFormatException nef) {
 						nef.printStackTrace();
 						Utils.logException(Utils.ROBOT_LOGGER, nef);
@@ -71,20 +74,50 @@ public class AutoMode {
 				}
 				else if (type.equalsIgnoreCase("drive")) {
 					try {
-						Integer distance = Integer.parseInt(s[1]);
+						Double distance = Double.parseDouble(s[2]);
 						//TODO: Add a class for a normal waypoint (drive straight)
-						waypoints.add(new DriveWaypoint(distance));
+						waypoints.add(new DriveWaypoint(distance, Integer.parseInt(s[0]), drive));
 					} catch (NumberFormatException nef) {
 						nef.printStackTrace();
 						Utils.logException(Utils.ROBOT_LOGGER, nef);
 					}
 					
 				}
+
 			}
 			
 		});
 		// Contains the split up ones for this line 
 		
+		Collections.sort(waypoints, WAYPOINT_COMPARER);
 		
+		runScheduler();
+	}
+	
+	private static final Comparator<Waypoint> WAYPOINT_COMPARER = new Comparator<Waypoint>() {
+
+		@Override
+		public int compare(Waypoint o1, Waypoint o2) {
+			return (int) (o1.getTime() - o2.getTime());
+		}
+		
+	};
+	
+	public void runScheduler() {
+		for(Waypoint w : waypoints) {
+			long diff = w.getTime() - (System.currentTimeMillis() - startTime);
+			try {
+				if(!(diff < 0)) {
+					Thread.sleep(diff);
+				}
+			} catch (InterruptedException e) {
+				Utils.logException(Utils.ROBOT_LOGGER, e);
+				e.printStackTrace();
+			}
+			w.run();
+		}
+		
+		
+
 	}
 }

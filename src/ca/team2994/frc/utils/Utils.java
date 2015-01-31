@@ -266,9 +266,9 @@ public class Utils {
 		drive.drive(0.0, 0.0);
 	}
 	
-	public static void addLine(double[] values) {
+	public static void addLine(String[] values) {
 		boolean isFirst = true;
-		for(double d : values) {
+		for(String d : values) {
 			
 			if(!isFirst) {
 				writeStringToFile(", ", new File(AUTONOMOUS_OUTPUT_FILE_LOC));

@@ -1,7 +1,9 @@
 package ca.team2994.frc.autonomous;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 
 import com.google.common.base.Charsets;
@@ -227,10 +229,18 @@ public class DriveManagerImpl implements DriveManager {
 	 * @see ca.team2994.frc.autonomous.DriveManager#runAutonomous
 	 */
 	public void runAutonomous() {
-		new ParseFile(new File(Utils.AUTONOMOUS_OUTPUT_FILE_LOC), new Encoder[] {
-			leftEncoder,
-			rightEncoder
-		}, drive);
+		///new ParseFile(new File(Utils.AUTONOMOUS_OUTPUT_FILE_LOC), new Encoder[] {
+		//	leftEncoder,
+		//	rightEncoder
+		//}, drive);
+		try {
+			 @SuppressWarnings("unused")
+			AutoMode auto = new AutoMode("Test Autonomous", Utils.AUTONOMOUS_OUTPUT_FILE_LOC, this);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 	
@@ -239,23 +249,45 @@ public class DriveManagerImpl implements DriveManager {
 	 * @see ca.team2994.frc.autonomous.DriveManager#runTeleOpLogging
 	 */
 	public void runTeleOPLogging() {
+
+		if(new File(Utils.AUTONOMOUS_OUTPUT_FILE_LOC).exists()) {
+			try {
+				PrintWriter writer = new PrintWriter(new File(Utils.AUTONOMOUS_OUTPUT_FILE_LOC));
+				writer.print("");
+				writer.close();
+				new File(Utils.AUTONOMOUS_OUTPUT_FILE_LOC).delete();
+			} 	
+			catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		long time = System.currentTimeMillis();
+		boolean isFirst = true;
 		while(robot.isOperatorControl()) {
-			doLogging();
+			long temp = 0;
+			if((temp = doLogging(time, isFirst)) != 0) {
+				time = temp;
+				isFirst = false;
+			}
 		}
     	drive.drive(0, 0);
 	}
 
 	
-	private void doLogging() {
+	private long doLogging(long startTime, boolean isFirst) {
 		resetMeasurements();
 		
 		stick.enableButton(1);
+		stick.enableButton(2);
     	//boolean wasLastTurn = false;
     	int i = 0;
-    	while(i != ButtonEntry.EVENT_CLOSED) {
+    	int j = 0;
+    	while(i != ButtonEntry.EVENT_CLOSED && j != ButtonEntry.EVENT_CLOSED) {
     		stick.update();
     		if(!robot.isOperatorControl()) {
-    			return;
+    			return 0;
     		}
     		/*if((leftEncoder.getDistance() < 0 && rightEncoder.getDistance() > 0) || (
     				leftEncoder.getDistance() > 0 && rightEncoder.getDistance() < 0)) {
@@ -268,16 +300,41 @@ public class DriveManagerImpl implements DriveManager {
     		*/
     		drive.arcadeDrive(-stick.getY(), -stick.getX()); // drive with arcade style (use right stick) (inverted) // drive with arcade style (use right stick)
     		i = stick.getEvent(1);
+    		j = stick.getEvent(2);
     	}
     	
-    	double encoderVal = (leftEncoder.getDistance() + rightEncoder.getDistance()) / 2;
+    	if(isFirst) {
+    		startTime = System.currentTimeMillis();
+    	}
     	
-    	Utils.addLine(new double[] {
-    			gyro.getAngle(),
-    			encoderVal
-    	});
+    	if(i == ButtonEntry.EVENT_CLOSED) {
+    		String time = "" + (System.currentTimeMillis() - startTime);
+    		String actionType = "drive";
+    		String encoderVal = "" + (leftEncoder.getDistance() + rightEncoder.getDistance()) / 2;
+    		
+    		Utils.addLine(new String[] {
+    			time, actionType, encoderVal
+    		});	
+    	}
+    	else {
+    		String time = "" + (System.currentTimeMillis() - startTime);
+    		String actionType = "turn";
+    		String gyroAngle = "" + gyro.getAngle();
+    		
+    		Utils.addLine(new String[] {
+    			time, actionType, gyroAngle
+    		});	
+    		
+    
+    	}
+    	
+    	
+    	
+    	
+    	
     	
     	resetMeasurements();
+		return startTime;
 	}
 	
 	/* (non-Javadoc)

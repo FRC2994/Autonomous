@@ -34,7 +34,7 @@ public class HandleParseValuesImpl implements HandleParseValues {
 	}
 
 	private void runCommands(double encoderDistance, int gyroAngle) {
-		new TurnWaypoint(gyroAngle).execute(Robot.driveManager);		//Turn...
-		new DriveWaypoint(encoderDistance).execute(Robot.driveManager);	//...and drive!
+		//new TurnWaypoint(gyroAngle, 0).execute(Robot.driveManager);		//Turn...		
+		//new DriveWaypoint(encoderDistance, 0).execute(Robot.driveManager);	//...and drive!
 	}
 }
