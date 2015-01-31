@@ -78,7 +78,7 @@ public class Robot extends SampleRobot {
     		}
     	}
     	else {
-    		
+    		driveManager.runTeleOPLogging();
     	}
     }
 

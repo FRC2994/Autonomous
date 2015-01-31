@@ -105,6 +105,27 @@ public class Utils {
 	 */
 	public static boolean writeLineToFile(String line, File file) {
 		
+		try {
+			stream = new PrintStream(new FileOutputStream(file, false));
+		} catch (FileNotFoundException e) {
+			Utils.logException(Utils.ROBOT_LOGGER, e);
+			return false;	
+		}
+
+		
+		stream.println(line);
+		
+		return true;
+	}
+	
+	/**
+	 * Writes a String to the file specified
+	 * @param line The String to write to the file
+	 * @param file The file to write to
+	 * @return Whether the operation was successful or not
+	 */
+	public static boolean writeStringToFile(String line, File file) {
+		
 		if(stream == null) {
 			try {
 				stream = new PrintStream(new FileOutputStream(file, false));
@@ -114,7 +135,7 @@ public class Utils {
 			}
 		}
 		
-		stream.println(line);
+		stream.print(line);
 		
 		return true;
 	}
@@ -243,5 +264,21 @@ public class Utils {
   	    	}
 		}
 		drive.drive(0.0, 0.0);
+	}
+	
+	public static void addLine(double[] values) {
+		boolean isFirst = true;
+		for(double d : values) {
+			
+			if(!isFirst) {
+				writeStringToFile(", ", new File(AUTONOMOUS_OUTPUT_FILE_LOC));
+			}
+			else {
+				isFirst = false;
+			}
+			
+			writeStringToFile("" + d, new File(AUTONOMOUS_OUTPUT_FILE_LOC));
+		}
+		writeStringToFile("\n", new File(AUTONOMOUS_OUTPUT_FILE_LOC));
 	}
 }
