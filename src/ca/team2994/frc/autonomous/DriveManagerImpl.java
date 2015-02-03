@@ -159,8 +159,6 @@ public class DriveManagerImpl implements DriveManager {
 
 			List<String> guavaResult = Files.readLines(new File(
 					Utils.CALIBRATION_OUTPUT_FILE_LOC), Charsets.UTF_8);
-			// Filter to only get those with one digit *** Still No Copying
-			// Done! ***
 			Iterable<String> guavaResultFiltered = Iterables.filter(
 					guavaResult, Utils.skipComments);
 
