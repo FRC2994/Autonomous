@@ -11,9 +11,28 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotDrive;
 
-public class CalibrationManager{
+/**
+ * Manages the calibration of the left and right encoders
+ * 
+ * @author <a href="https://github.com/eandr127">eandr127</a>
+ * @author <a href="https://github.com/JackMc">JackMc</a>
+ *
+ */
+public class CalibrationManager {
+	
+	/**
+	 * 
+	 */
 	EJoystick stick;
+	
+	/**
+	 * 
+	 */
 	RobotBase base;
+	
+	/**
+	 * 
+	 */
 	RobotDrive drive;
 	
 	/**
@@ -27,6 +46,13 @@ public class CalibrationManager{
 		this.drive = drive;
 	}
 	
+	
+	/**
+	 * 
+	 * @param left
+	 * @param right
+	 * @param stick
+	 */
 	public void calibrateEncoders(Encoder left, Encoder right, EJoystick stick) {
 		Utils.ROBOT_LOGGER.log(INFO, "Calibration");
     	left.reset();

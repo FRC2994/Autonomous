@@ -1,10 +1,35 @@
 package ca.team2994.frc.autonomous;
 
+/**
+ * A type of waypoint action (rotate)
+ * 
+ * @author <a href="https://github.com/eandr127">eandr127</a>
+ * @author <a href="https://github.com/JackMc">JackMc</a>
+ *
+ */
 public class TurnWaypoint implements Waypoint {
+	
+	/**
+	 * 
+	 */
 	private int angle;
+	
+	/**
+	 * 
+	 */
 	private long time;
+	
+	/**
+	 * 
+	 */
 	private DriveManager manager;
 	
+	/**
+	 * 
+	 * @param angle
+	 * @param time
+	 * @param manager
+	 */
 	public TurnWaypoint(int angle, long time, DriveManager manager) {
 		this.angle = angle;
 		this.time = time;
