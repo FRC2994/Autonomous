@@ -21,17 +21,17 @@ import edu.wpi.first.wpilibj.RobotDrive;
 public class CalibrationManager {
 	
 	/**
-	 * 
+	 * The joystick to use
 	 */
 	EJoystick stick;
 	
 	/**
-	 * 
+	 * The RobotBase for the robot
 	 */
 	RobotBase base;
 	
 	/**
-	 * 
+	 * Robot - used to bail out if disable
 	 */
 	RobotDrive drive;
 	
@@ -40,6 +40,12 @@ public class CalibrationManager {
 	 */
 	private static final int CALIBRATION_BUTTON = 2;
 	
+	/**
+	 * Initialize values for object
+	 * @param stick The joystick to use
+	 * @param drive The RobotDrive to drive with
+	 * @param base Robot - used to bail out if disable
+	 */
 	public CalibrationManager(EJoystick stick, RobotDrive drive, RobotBase base) {
 		this.stick = stick;
 		this.base = base;
@@ -48,10 +54,10 @@ public class CalibrationManager {
 	
 	
 	/**
-	 * 
-	 * @param left
-	 * @param right
-	 * @param stick
+	 * Calibrates the encoders for using Encoder.getDistance()
+	 * @param left The left encoder to use
+	 * @param right The right encoder to use
+	 * @param stick The joystick to use
 	 */
 	public void calibrateEncoders(Encoder left, Encoder right, EJoystick stick) {
 		Utils.ROBOT_LOGGER.log(INFO, "Calibration");

@@ -27,20 +27,19 @@ import edu.wpi.first.wpilibj.RobotDrive;
  * 
  */
 public class DriveManagerImpl implements DriveManager {
-	// Robot - used to bail out if disable
+	
 	/**
-	 * 
+	 * Robot - used to bail out if disable
 	 */
 	private RobotBase robot;
 
-	// PID
 	/**
-	 * 
+	 * SimPID to oscillate using encoders around target 
 	 */
 	private SimPID encoderPID;
 	
 	/**
-	 * 
+	 * SimPID to oscillate using gyro around target 
 	 */
 	private SimPID gyroPID;
 

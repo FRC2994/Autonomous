@@ -50,12 +50,12 @@ public interface DriveManager {
 	public void runAutonomous();
 	
 	/**
-	 * 
+	 * Log waypoints to be loaded in autonomous
 	 */
 	public void runTeleOPLogging();
 	
 	/**
-	 * 
+	 * Reset gyro and encoder measurements
 	 */
 	public void resetMeasurements();
 }

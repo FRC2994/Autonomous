@@ -24,27 +24,28 @@ import com.google.common.io.Files;
 public class AutoMode {
 
 	/**
-	 * 
+	 * The DriveManager to drive the robot with
 	 */
 	private DriveManager drive;
 
 	/**
-	 * 
+	 * The file to load waypoints from
 	 */
 	private String filename;
-	@SuppressWarnings("unused")
+	
 	/**
-	 * 
+	 * The name of the autonomous routine
 	 */
+	@SuppressWarnings("unused")
 	private String name;
 
 	/**
-	 * 
+	 * A list of all waypoints loaded
 	 */
 	private List<Waypoint> waypoints;
 
 	/**
-	 * 
+	 * The start time of this object
 	 */
 	public final long startTime = System.currentTimeMillis();
 
@@ -130,7 +131,7 @@ public class AutoMode {
 	}
 
 	/**
-	 * 
+	 * A comparator for sorting the list of autonomous commands from oldest to newest
 	 */
 	private static final Comparator<Waypoint> WAYPOINT_COMPARER = new Comparator<Waypoint>() {
 
@@ -142,7 +143,7 @@ public class AutoMode {
 	};
 
 	/**
-	 * 
+	 * A scheduler for running the waypoints loaded from a file
 	 */
 	public void runScheduler() {
 		for (Waypoint w : waypoints) {
