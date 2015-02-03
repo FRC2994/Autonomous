@@ -1,9 +1,17 @@
 package ca.team2994.frc.autonomous;
 
-public interface Waypoint {
+/**
+ * A type of waypoint action
+ * 
+ * @author <a href="https://github.com/eandr127">eandr127</a>
+ * @author <a href="https://github.com/JackMc">JackMc</a>
+ * 
+ */
+public interface Waypoint extends Runnable {
+		
 	/**
-	 * Performs the action associated with this waypoint. 
-	 * @param drive The RobotDrive to drive with
+	 * 
+	 * @return
 	 */
-	public void execute(DriveManager drive);
+	public long getTime();
 }

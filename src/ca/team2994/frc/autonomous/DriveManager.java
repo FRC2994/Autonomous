@@ -1,5 +1,12 @@
 package ca.team2994.frc.autonomous;
 
+/**
+ * Manages the driving of the robot
+ * 
+ * @author <a href="https://github.com/eandr127">eandr127</a>
+ * @author <a href="https://github.com/JackMc">JackMc</a>
+ * 
+ */
 public interface DriveManager {
 
 	/**
@@ -43,9 +50,12 @@ public interface DriveManager {
 	public void runAutonomous();
 	
 	/**
-	 * 
+	 * Log waypoints to be loaded in autonomous
 	 */
 	public void runTeleOPLogging();
 	
+	/**
+	 * Reset gyro and encoder measurements
+	 */
 	public void resetMeasurements();
 }

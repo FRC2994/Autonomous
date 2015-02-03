@@ -1,7 +1,5 @@
 package ca.team2994.frc.utils;
 
-import static java.util.logging.Level.INFO;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -71,6 +69,8 @@ public class Utils {
 	 * The path for the log
 	 */
 	public static final String ROBOT_LOG_FILENAME = "/home/lvuser/robot.log";
+	
+	public static final File AUTONOMOUS_OUTPUT_FILE = new File(AUTONOMOUS_OUTPUT_FILE_LOC);
 	
 	/**
 	 * Configures the logger
@@ -146,7 +146,7 @@ public class Utils {
 	 * @return Whether the operation was successful or not
 	 */
 	public static boolean writeLineToFile(String line) {
-		return writeLineToFile(line, new File(AUTONOMOUS_OUTPUT_FILE_LOC));
+		return writeLineToFile(line, AUTONOMOUS_OUTPUT_FILE);
 	}
 	
 	/**
@@ -182,93 +182,14 @@ public class Utils {
 		
 		log.severe(exception);
 	}
-	
-	/** @deprecated by {@link ca.team2994.frc.autonomous.DriveWaypoint DriveWaypoint}<br>
-	 * Drive until a distance is reached
-	 * @param speed The speed to drive at
-	 * @param distance How far to drive
-	 * @param encoderA The first Encoder
-	 * @param encoderB the second Encoder
-	 * @param drive The RobotDrive to use
-	 * @param sim The SimPID to use
-	 */
-	public static void driveStraight(double speed, double distance, Encoder encoderA, Encoder encoderB, RobotDrive drive, SimPID sim) {
-		encoderA.reset();
-		encoderB.reset();
 
-		int autoLoopCounter = 0;
-		sim.calcPID((encoderA.getDistance() + encoderB.getDistance()) / 2.0);
-  		while(!sim.isDone() && !drive.isSafetyEnabled()) {
-  	    	if(autoLoopCounter == 0) {
-  	    		sim.setDesiredValue(distance);
-  	    		encoderA.reset();
-  	        	encoderB.reset();
-  	    	}
-  	    	
-  	    	double driveVal = sim.calcPID((encoderA.getDistance() + encoderB.getDistance()) / 2.0);
-  	    	double limitVal = SimLib.limitValue(driveVal, 0.25);
-  	    	
-  	    	drive.setLeftRightMotorOutputs(limitVal + 0.0038, limitVal);
-  	    	autoLoopCounter++;
-  	    	
-  	    	System.out.println("isDone: " + sim.isDone() + " driveVal: " + driveVal + " limitVal: " + limitVal + " leftEncoder: " + encoderA.getDistance() + " rightEncoder: " + encoderB.getDistance());
-  	    	if(autoLoopCounter % 100 == 0) {
-  	    		Utils.ROBOT_LOGGER.log(INFO, ("isDone: " + sim.isDone() + " driveVal: " + driveVal + " limitVal: " + limitVal + " leftEncoder: " + encoderA.getDistance() + " rightEncoder: " + encoderB.getDistance()));
-  	    	}
-  		}
-    	sim.resetErrorSum();
-    	sim.resetPreviousVal();
-    	
-    	
-    	encoderA.reset();
-    	encoderB.reset();
-    	
-    	drive.setLeftRightMotorOutputs(0, 0);
-	}
-	
-	/** @deprecated by {@link ca.team2994.frc.autonomous.TurnWaypoint TurnWaypoint}<br>
-	 * Turn the robot until specified degrees
-	 * @param gyro The gyro to measure turn angle
-	 * @param drive The RobotDrive to drive with
-	 * @param gyroPID The SimPID to use
-	 * @param degrees The angle to turn
-	 * @param max The maximum speed to drive at
+	/**
+	 * 
+	 * @param values
 	 */
-	public static void turn(SimGyro gyro, RobotDrive drive, SimPID gyroPID, int degrees, double max) {
-  		gyroPID.setDesiredValue(degrees);
-  		gyro.reset(0);
-		int autoLoopCounter = 0;
-		gyroPID.calcPID(gyro.getAngle());
-		System.out.println("isDone: " + gyroPID.isDone() + " gyro: " + gyro.getAngle());
-		while(!gyroPID.isDone() && drive.isSafetyEnabled()) {
-  	    	if(autoLoopCounter == 0) {
-  	    		gyroPID.setDesiredValue(degrees);
-  	    		gyro.reset(0);
-  	    	}
-			
-			double driveVal = gyroPID.calcPID(gyro.getAngle());
-  	    	double limitVal = SimLib.limitValue(driveVal, max);
-  	    	
-  	    	if(degrees < 0) {
-  	    		drive.setLeftRightMotorOutputs(limitVal, -limitVal);
-  	    	}
-  	    	else {
-  	    		drive.setLeftRightMotorOutputs(-limitVal, limitVal);
-  	    	}
-  	    	autoLoopCounter++;
-  	    	
-  	    	System.out.println("isDone: " + gyroPID.isDone() + " driveVal: " + driveVal + " limitVal: " + limitVal + " gyro: " + gyro.getAngle());
-  	    	
-  	    	if(autoLoopCounter % 100 == 0) {
-  	    		Utils.ROBOT_LOGGER.log(INFO, ("isDone: " + gyroPID.isDone() + " driveVal: " + driveVal + " limitVal: " + limitVal + " gyro: " + gyro.getAngle()));
-  	    	}
-		}
-		drive.drive(0.0, 0.0);
-	}
-	
-	public static void addLine(double[] values) {
+	public static void addLine(String[] values) {
 		boolean isFirst = true;
-		for(double d : values) {
+		for(String d : values) {
 			
 			if(!isFirst) {
 				writeStringToFile(", ", new File(AUTONOMOUS_OUTPUT_FILE_LOC));

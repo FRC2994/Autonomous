@@ -20,8 +20,13 @@ import edu.wpi.first.wpilibj.Timer;
  * 
  * @author <a href="https://github.com/eandr127">eandr127</a>
  * @author <a href="https://github.com/JackMc">JackMc</a>
+ * 
  */
 public class Robot extends SampleRobot {
+	
+	/**
+	 * 
+	 */
 	int autoLoopCounter;
 	
 	/**
@@ -29,12 +34,26 @@ public class Robot extends SampleRobot {
 	 */
 	private static final boolean SAVE_WAYPOINTS = true;
 	
+	
+	/**
+	 * 
+	 */
 	private EJoystick stick;
 	
+	/**
+	 * 
+	 */
 	public static DriveManager driveManager;
 	// TODO: Implement mode-switching functionality
+	
+	/**
+	 * 
+	 */
 	AutoMode currentMode;
 	
+	/**
+	 * 
+	 */
 	private SimGyro gyro;
 	
     /**
