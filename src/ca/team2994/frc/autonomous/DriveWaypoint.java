@@ -36,16 +36,6 @@ public class DriveWaypoint implements Waypoint {
 		this.manager = manager;
 	}
 
-	/** @deprecated by {@link #run() run()}
-	 * {@inheritDoc}
-	 * Drive forward
-	 */
-	@Override
-	public void execute(DriveManager drive) {
-		// Turn angle degrees
-		drive.driveStraight(distance);
-	}
-
 	@Override
 	public long getTime() {
 		return time;

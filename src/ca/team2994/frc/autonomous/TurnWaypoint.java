@@ -36,16 +36,6 @@ public class TurnWaypoint implements Waypoint {
 		this.manager = manager;
 	}
 	
-	/** @deprecated by {@link #run() run()}
-	 * {@inheritDoc}
-	 * Turn robot
-	 */
-	@Override
-	public void execute(DriveManager drive) {
-		// Turn angle degrees
-		drive.driveTurn(angle);
-	}
-	
 	@Override
 	public long getTime() {
 		return time;
