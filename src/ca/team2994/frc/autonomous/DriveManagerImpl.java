@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.List;
 
 import ca.team2994.frc.utils.ButtonEntry;
+import ca.team2994.frc.utils.ConfigFile;
 import ca.team2994.frc.utils.EJoystick;
 import ca.team2994.frc.utils.SimGyro;
 import ca.team2994.frc.utils.SimLib;
@@ -92,6 +93,9 @@ public class DriveManagerImpl implements DriveManager {
 	 * 
 	 */
 	private CalibrationManager calibration;
+	
+	@SuppressWarnings("unused")
+	private ConfigFile conf;
 
 	/**
 	 * Initializes a DriveManagerImpl. This class is an implementation of the
@@ -133,6 +137,8 @@ public class DriveManagerImpl implements DriveManager {
 		this.rightEncoder = rightEncoder;
 		this.stick = stick;
 
+		
+		this.conf = new ConfigFile(ConfigFile.DEFAULT_CONFIGURATION_FILE);
 		// Initialize the gyro (takes 1.0 seconds cause of a wait in the code,
 		// can we fix this?)
 		// gyro.setSensitivity(Double.POSITIVE_INFINITY);
@@ -307,11 +313,6 @@ public class DriveManagerImpl implements DriveManager {
 	 * @see ca.team2994.frc.autonomous.DriveManager#runAutonomous
 	 */
 	public void runAutonomous() {
-		// /new ParseFile(new File(Utils.AUTONOMOUS_OUTPUT_FILE_LOC), new
-		// Encoder[] {
-		// leftEncoder,
-		// rightEncoder
-		// }, drive);
 		try {
 			@SuppressWarnings("unused")
 			AutoMode auto = new AutoMode("Test Autonomous",
@@ -359,12 +360,6 @@ public class DriveManagerImpl implements DriveManager {
 			if (!robot.isOperatorControl()) {
 				return 0;
 			}
-			/*
-			 * if((leftEncoder.getDistance() < 0 && rightEncoder.getDistance() >
-			 * 0) || ( leftEncoder.getDistance() > 0 &&
-			 * rightEncoder.getDistance() < 0)) { wasLastTurn = true; } else
-			 * if(wasLastTurn) { leftEncoder.reset(); rightEncoder.reset(); }
-			 */
 			drive.arcadeDrive(-stick.getY(), -stick.getX()); // drive with
 																// arcade style
 																// (use right
