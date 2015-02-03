@@ -70,6 +70,8 @@ public class Utils {
 	 */
 	public static final String ROBOT_LOG_FILENAME = "/home/lvuser/robot.log";
 	
+	public static final File AUTONOMOUS_OUTPUT_FILE = new File(AUTONOMOUS_OUTPUT_FILE_LOC);
+	
 	/**
 	 * Configures the logger
 	 */
@@ -144,7 +146,7 @@ public class Utils {
 	 * @return Whether the operation was successful or not
 	 */
 	public static boolean writeLineToFile(String line) {
-		return writeLineToFile(line, new File(AUTONOMOUS_OUTPUT_FILE_LOC));
+		return writeLineToFile(line, AUTONOMOUS_OUTPUT_FILE);
 	}
 	
 	/**

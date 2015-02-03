@@ -1,9 +1,14 @@
 package ca.team2994.frc.autonomous;
 
-import java.io.File;
-
 import ca.team2994.frc.utils.Utils;
 
+/**
+ * 
+ * 
+ * @author <a href="https://github.com/eandr127">eandr127</a>
+ * @author <a href="https://github.com/JackMc">JackMc</a>
+ * 
+ */
 public class HandleParseValuesImpl implements HandleParseValues {
 
 	/**
@@ -25,7 +30,7 @@ public class HandleParseValuesImpl implements HandleParseValues {
 					encoderDistance = s;	//Array is at spot 1, so assign gyroAngle to s
 					break;
 				default:
-					Utils.logException(Utils.ROBOT_LOGGER, new IllegalArgumentException(new File(Utils.AUTONOMOUS_OUTPUT_FILE_LOC).getName() + " has strange contents!")); //Value shouldn't exist!
+					Utils.logException(Utils.ROBOT_LOGGER, new IllegalArgumentException(Utils.AUTONOMOUS_OUTPUT_FILE.getName() + " has strange contents!")); //Value shouldn't exist!
 					break;
 			}
 		}
@@ -33,6 +38,11 @@ public class HandleParseValuesImpl implements HandleParseValues {
 		runCommands(encoderDistance, gyroAngle); //Now take care of the values
 	}
 
+	/**
+	 * 
+	 * @param encoderDistance
+	 * @param gyroAngle
+	 */
 	private void runCommands(double encoderDistance, int gyroAngle) {
 		//new TurnWaypoint(gyroAngle, 0).execute(Robot.driveManager);		//Turn...		
 		//new DriveWaypoint(encoderDistance, 0).execute(Robot.driveManager);	//...and drive!
